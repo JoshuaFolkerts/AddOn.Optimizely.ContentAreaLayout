@@ -2,3 +2,8 @@
 [Oo]bj
 [Rr]elease
 [Dd]ebug
+
+Packages/
+modules/
+.vs/
+App_Data/
