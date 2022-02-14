@@ -1,6 +1,6 @@
 ﻿using EPiServer.Core;
 using System;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace RenderingLayoutProcessor.Impl
 {
@@ -20,22 +20,22 @@ namespace RenderingLayoutProcessor.Impl
 
         public bool CanNestUnder(IRenderingContentAreaContext parentContext) => parentContext is DefaultContentAreaContext;
 
-        public void ContainerClose(HtmlHelper htmlHelper)
+        public void ContainerClose(IHtmlHelper htmlHelper)
         {
         }
 
-        public RenderingProcessorAction RenderItem(HtmlHelper htmlHelper, ContentAreaItem current, Action renderItem) =>
+        public RenderingProcessorAction RenderItem(IHtmlHelper htmlHelper, ContentAreaItem current, Action renderItem) =>
             RenderingProcessorAction.Close;
 
-        public void ItemClose(HtmlHelper htmlHelper)
+        public void ItemClose(IHtmlHelper htmlHelper)
         {
         }
 
-        public void ItemOpen(HtmlHelper htmlHelper)
+        public void ItemOpen(IHtmlHelper htmlHelper)
         {
         }
 
-        public void ContainerOpen(HtmlHelper htmlHelper)
+        public void ContainerOpen(IHtmlHelper htmlHelper)
         {
         }
     }

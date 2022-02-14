@@ -1,7 +1,6 @@
 ﻿using EPiServer.Core;
-using RenderingLayoutProcessor.Models;
 using System;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace RenderingLayoutProcessor.Impl
 {
@@ -19,25 +18,25 @@ namespace RenderingLayoutProcessor.Impl
         public bool CanNestUnder(IRenderingContentAreaContext parentContext) =>
             throw new InvalidOperationException("At no point should this be nested under any other context.");
 
-        public void ContainerOpen(HtmlHelper htmlHelper)
+        public void ContainerOpen(IHtmlHelper htmlHelper)
         {
         }
 
-        public void ContainerClose(HtmlHelper htmlHelper)
+        public void ContainerClose(IHtmlHelper htmlHelper)
         {
         }
 
-        public RenderingProcessorAction RenderItem(HtmlHelper htmlHelper, ContentAreaItem current, Action renderItem)
+        public RenderingProcessorAction RenderItem(IHtmlHelper htmlHelper, ContentAreaItem current, Action renderItem)
         {
             renderItem();
             return RenderingProcessorAction.Continue;
         }
 
-        public void ItemClose(HtmlHelper htmlHelper)
+        public void ItemClose(IHtmlHelper htmlHelper)
         {
         }
 
-        public void ItemOpen(HtmlHelper htmlHelper)
+        public void ItemOpen(IHtmlHelper htmlHelper)
         {
         }
     }

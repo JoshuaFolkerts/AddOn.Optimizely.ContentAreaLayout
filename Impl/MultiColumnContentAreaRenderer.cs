@@ -3,10 +3,12 @@ using EPiServer.Core;
 using EPiServer.Web;
 using EPiServer.Web.Mvc;
 using EPiServer.Web.Mvc.Html;
-using StructureMap;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web.Mvc;
+using EPiServer.Core.Html.StringParsing;
+using EPiServer.Web.Internal;
+using EPiServer.Web.Templating;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace RenderingLayoutProcessor.Impl
 {
@@ -24,16 +26,25 @@ namespace RenderingLayoutProcessor.Impl
         public MultiColumnContentAreaRenderer() : base()
         {
         }
-
-        [DefaultConstructor]
-        public MultiColumnContentAreaRenderer(IContentRenderer contentRenderer, TemplateResolver templateResolver, IContentAreaItemAttributeAssembler attributeAssembler, IContentRepository contentRepository, IContentAreaLoader contentAreaLoader)
-            : base(contentRenderer, templateResolver, attributeAssembler, contentRepository, contentAreaLoader)
+        
+        //[DefaultConstructor]
+        public MultiColumnContentAreaRenderer(
+            IContentRenderer contentRenderer,
+            ITemplateResolver templateResolver,
+            IContentAreaItemAttributeAssembler attributeAssembler,
+            IContentRepository contentRepository,
+            IContentAreaLoader contentAreaLoader,
+            IContextModeResolver contextModeResolver,
+            ContentAreaRenderingOptions contentAreaRenderingOptions,
+            ModelExplorerFactory modelExplorerFactory,
+            IModelTemplateTagResolver modelTemplateTagResolver)
+            : base(contentRenderer, templateResolver, attributeAssembler, contentRepository, contentAreaLoader, contextModeResolver, contentAreaRenderingOptions, modelExplorerFactory, modelTemplateTagResolver)
         {
             this.attributeAssembler = attributeAssembler;
             this.contentRenderer = contentRenderer;
         }
 
-        protected override void RenderContentAreaItems(HtmlHelper htmlHelper, IEnumerable<ContentAreaItem> contentAreaItems)
+        protected override void RenderContentAreaItems(IHtmlHelper htmlHelper, IEnumerable<ContentAreaItem> contentAreaItems)
         {
             IRenderingContentAreaContext currentContext = DefaultContentAreaContext.Instance;
 
@@ -90,7 +101,7 @@ namespace RenderingLayoutProcessor.Impl
             }
         }
 
-        protected override void RenderContentAreaItem(HtmlHelper htmlHelper, ContentAreaItem contentAreaItem, string templateTag, string htmlTag, string cssClass)
+        protected override void RenderContentAreaItem(IHtmlHelper htmlHelper, ContentAreaItem contentAreaItem, string templateTag, string htmlTag, string cssClass)
         {
             var renderSettings = new Dictionary<string, object>
             {
@@ -107,37 +118,37 @@ namespace RenderingLayoutProcessor.Impl
             if (content == null)
                 return;
 
-            using (new ContentAreaContext(htmlHelper.ViewContext.RequestContext, content.ContentLink))
-            {
-                var templateModel = ResolveTemplate(htmlHelper, content, templateTag);
-                if (templateModel != null || IsInEditMode(htmlHelper))
-                {
-                    // Only wrap individual content area items when necessary
-                    var attributesToMerge = attributeAssembler.GetAttributes(contentAreaItem, IsInEditMode(htmlHelper), templateModel != null);
-                    bool shouldHaveTag = attributesToMerge.Count > 0 || !string.IsNullOrEmpty(cssClass) || htmlTag != "div" || IsInEditMode(htmlHelper);
-                    TagBuilder tagBuilder = shouldHaveTag
-                        ? new TagBuilder(htmlTag)
-                        : null;
+            //using (new ContentRenderingScope(htmlHelper.ViewContext.HttpContext, (IContentData) content, templateModel, templateTags))
+            //{
+            //    var templateModel = ResolveTemplate(htmlHelper, content, templateTag);
+            //    if (templateModel != null || IsInEditMode())
+            //    {
+            //        // Only wrap individual content area items when necessary
+            //        var attributesToMerge = attributeAssembler.GetAttributes(contentAreaItem, IsInEditMode(htmlHelper), templateModel != null);
+            //        bool shouldHaveTag = attributesToMerge.Count > 0 || !string.IsNullOrEmpty(cssClass) || htmlTag != "div" || IsInEditMode(htmlHelper);
+            //        TagBuilder tagBuilder = shouldHaveTag
+            //            ? new TagBuilder(htmlTag)
+            //            : null;
 
-                    if (tagBuilder != null)
-                    {
-                        AddNonEmptyCssClass(tagBuilder, cssClass);
-                        tagBuilder.MergeAttributes(attributesToMerge);
-                        BeforeRenderContentAreaItemStartTag(tagBuilder, contentAreaItem);
-                        htmlHelper.ViewContext.Writer.Write(tagBuilder.ToString(TagRenderMode.StartTag));
-                    }
+            //        if (tagBuilder != null)
+            //        {
+            //            AddNonEmptyCssClass(tagBuilder, cssClass);
+            //            tagBuilder.MergeAttributes(attributesToMerge);
+            //            BeforeRenderContentAreaItemStartTag(tagBuilder, contentAreaItem);
+            //            htmlHelper.ViewContext.Writer.Write(tagBuilder.ToString(TagRenderMode.StartTag));
+            //        }
 
-                    htmlHelper.RenderContentData(content, true, templateModel, contentRenderer);
+            //        htmlHelper.RenderContentData(content, true, templateModel, contentRenderer);
 
-                    if (tagBuilder != null)
-                    {
-                        htmlHelper.ViewContext.Writer.Write(tagBuilder.ToString(TagRenderMode.EndTag));
-                    }
-                }
-            }
+            //        if (tagBuilder != null)
+            //        {
+            //            htmlHelper.ViewContext.Writer.Write(tagBuilder.ToString(TagRenderMode.EndTag));
+            //        }
+            //    }
+            //}
         }
 
-        protected override bool ShouldRenderWrappingElement(HtmlHelper htmlHelper)
+        protected override bool ShouldRenderWrappingElement(IHtmlHelper htmlHelper)
         {
             // Default behavior returns true by default if the hascontainer is not specified.
             // Overriding to return false if not specified
@@ -151,7 +162,7 @@ namespace RenderingLayoutProcessor.Impl
                 || !string.IsNullOrEmpty(cssClass);
         }
 
-        protected override string GetContentAreaItemCssClass(HtmlHelper htmlHelper, ContentAreaItem contentAreaItem)
+        protected override string GetContentAreaItemCssClass(IHtmlHelper htmlHelper, ContentAreaItem contentAreaItem)
         {
             if (contentAreaItem.GetContent() is IRenderingLayoutBlock)
                 return string.Empty;

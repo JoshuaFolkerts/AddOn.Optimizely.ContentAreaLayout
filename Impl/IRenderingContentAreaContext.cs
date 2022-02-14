@@ -1,7 +1,6 @@
 ﻿using EPiServer.Core;
-using RenderingLayoutProcessor.Models;
 using System;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace RenderingLayoutProcessor.Impl
 {
@@ -11,25 +10,25 @@ namespace RenderingLayoutProcessor.Impl
         /// Render any opening tags prior to the rendering of an item.
         /// (For example, in bootstrap, opening row div if not already there, opening column for each item.)
         /// </summary>
-        void ItemOpen(HtmlHelper htmlHelper);
+        void ItemOpen(IHtmlHelper htmlHelper);
 
         /// <summary>
         /// Render any closing tags after an item
         /// (For example, in bootstrap, closing column for each item.)
         /// </summary>
-        void ItemClose(HtmlHelper htmlHelper);
+        void ItemClose(IHtmlHelper htmlHelper);
 
-        RenderingProcessorAction RenderItem(HtmlHelper htmlHelper, ContentAreaItem current, Action renderItem);
+        RenderingProcessorAction RenderItem(IHtmlHelper htmlHelper, ContentAreaItem current, Action renderItem);
 
         /// <summary>
         /// Area Context is over, clean up any open tags.
         /// </summary>
-        void ContainerClose(HtmlHelper htmlHelper);
+        void ContainerClose(IHtmlHelper htmlHelper);
 
         /// <summary>
         /// The begining of a Context.  This is called whether the context contains any items or not.
         /// </summary>
-        void ContainerOpen(HtmlHelper htmlHelper);
+        void ContainerOpen(IHtmlHelper htmlHelper);
 
         /// <summary>
         /// Return true if this IContentAreaContext is capable of containg the childContext.
