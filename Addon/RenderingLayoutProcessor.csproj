@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+	  <TargetFramework>net5.0</TargetFramework>
+	  <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <OutputType>Library</OutputType>
+	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	<IsPackable>true</IsPackable>
+	<DebugType>embedded</DebugType>
+	<PackageTags></PackageTags>
+	<PackageProjectUrl></PackageProjectUrl>
+	<RepositoryUrl></RepositoryUrl>
+	<Copyright />
+	<Authors />
+	<Version>0.1.0</Version>
+	<Company></Company>
+	<Description></Description>
+	<Product></Product>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="EPiServer.CMS" Version="12.2.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="ContentAreaRenderer.cs" />
+  </ItemGroup>
+</Project>
