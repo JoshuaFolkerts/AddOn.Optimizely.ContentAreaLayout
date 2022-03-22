@@ -1,10 +1,8 @@
 using System;
 using System.IO;
-using Site.Extensions;
 using EPiServer.Cms.Shell;
 using EPiServer.Cms.UI.AspNetIdentity;
 using EPiServer.Scheduler;
-using EPiServer.ServiceLocation;
 using EPiServer.Web.Routing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -30,13 +28,15 @@ namespace Site
 
                 services.Configure<SchedulerOptions>(options => options.Enabled = false);
             }
+            
+            services.AddRazorPages().AddRazorRuntimeCompilation();
 
             services
                 .AddCmsAspNetIdentity<ApplicationUser>()
                 .AddCms()
-                .AddAlloy()
                 .AddAdminUserRegistration()
-                .AddEmbeddedLocalization<Startup>();
+                .AddEmbeddedLocalization<Startup>()
+                .AddDetection();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

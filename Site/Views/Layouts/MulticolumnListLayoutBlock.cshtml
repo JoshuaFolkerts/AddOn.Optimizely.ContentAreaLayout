@@ -1,4 +1,4 @@
-@model Site.Models.MultiCol.MulticolumnListLayoutBlock
+@model Site.Models.MultiCol.BootstrapLayoutBlock
 @using EPiServer.Editor
 @using Site.Models.MultiCol
 
@@ -7,10 +7,16 @@
     <div class="alert alert-dark alert-editmode" style="padding: 3px 6px 6px;">
         <div class="text-center fw-bold" style="font-size: 12px">@(((EPiServer.Core.IContent)Model).Name)</div>
         <div class="row align-center">
-            @for (int x = (int)Model.ColumnCount - 1; x >= 0; x--)
-            {
-                <div class="@Model.ColumnCount.ColumnCssClass(Model.ColumnsBreakPoint)"><hr style="margin: 3px 0; border-color: #000; background-color: #000;" /></div>
-            }
+            @* @for (var x = (int)Model.ColumnCount - 1; x >= 0; x--) *@
+            @* { *@
+            @*     <div class="@Model.ColumnCount.ColumnCssClass(Model.ColumnsBreakPoint)"> *@
+            @*         <hr style="margin: 3px 0; border-color: #000; background-color: #000;"/> *@
+            @*     </div> *@
+            @* } *@
+            
+            <div>
+                <hr style="margin: 3px 0; border-color: #000; background-color: #000;"/>
+            </div>
         </div>
     </div>
 }

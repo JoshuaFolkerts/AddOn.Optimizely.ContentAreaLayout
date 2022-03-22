@@ -1,40 +1,61 @@
-@using EPiServer.Web
-
-@model IPageViewModel<SitePageData>
+@using EPiServer.ServiceLocation
+@using EPiServer
+@using EPiServer.Filters
+@model StandardPage
 
 @{
-    HelperResult ItemTemplate(HtmlHelpers.MenuItem item)
-    {
-        <li class="nav-item">
-            @Html.PageLink(item.Page, null, new { @class = "nav-link" + (item.Selected ? " active" : null) })
-        </li>
-        return new HelperResult(w => Task.CompletedTask);
-    }
+    var currentContentLink = Html.ViewContext.HttpContext.GetContentLink();
+    var contentLoader = ServiceLocator.Current.GetInstance<IContentLoader>();
+    var menuItems = contentLoader.GetChildren<PageData>(ContentReference.StartPage)
+        .Where(x => x.VisibleInMenu && !new FilterPublished().ShouldFilter(x) && !new FilterAccess().ShouldFilter(x));
+}
+@if (Model.CssFramework == CssFramework.Bootstrap)
+{
+    <header>
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark p-2">
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"><i class="bi bi-list"></i></span>
+            </button>
+            <a class="navbar-brand" href="/">Start</a>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mr-auto">
+                    @{
+                        foreach (var item in menuItems)
+                        {
+                            <li class="nav-item">
+                                @Html.PageLink(item, null, new {@class = "nav-link"})
+                            </li>
+                        }
+                    }
+                </ul>
+            </div>
+            @{
+                if (!Context.User.Identity.IsAuthenticated)
+                {
+                    <a class="btn btn-outline-success" href="/util/login">Login</a>
+                }
+            }
+        </nav>
+    </header>
+}
+else
+{
+    <div class="top-bar">
+        <div class="top-bar-left">
+            <ul class="menu">
+                <li><a href="/">Start</a></li>
+                    @{
+                        foreach (var item in menuItems)
+                        {
+                            <li>
+                                @Html.PageLink(item, null, null)
+                            </li>
+                        }
+                    }
+            </ul>
+        </div>
+    </div>
 }
 
-<header>
-    <div class="container">
-        <nav class="navbar navbar-expand-lg">
-            <div class="container-fluid">
-                <a class="navbar-brand logo" href="@Model.Layout.LogotypeLinkUrl" title="@Model.Layout.Logotype.Title">
-                    @Html.PropertyFor(x => x.Layout.Logotype)
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"><i class="bi bi-list"></i></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav">
-                        @Html.MenuList(SiteDefinition.Current.StartPage, ItemTemplate)
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </div>
-</header>
 
-@*@{ using (Html.BeginForm(null, null, Html.ViewContext.IsInEditMode() ? FormMethod.Post : FormMethod.Get, new { @action = Model.Layout.SearchActionUrl }))
-    {
-        <input type="text" class="search-query" name="q" id="SearchKeywords" placeholder="@Html.Translate("/mainnavigation/search")" />
-        <input type="submit" class="searchButton" id="SearchButton" value="" />
-    }
-}*@

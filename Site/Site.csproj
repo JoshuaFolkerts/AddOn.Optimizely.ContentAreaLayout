@@ -6,6 +6,7 @@
   
   <ItemGroup>
     <PackageReference Include="EPiServer.CMS" Version="12.3.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.15" />
     <PackageReference Include="Wangkanai.Detection" Version="2.0.1" />
   </ItemGroup>
   
@@ -15,5 +16,35 @@
   
   <ItemGroup>
     <ProjectReference Include="..\Addon\RenderingLayoutProcessor.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Views\ArticlePage\Index.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\LandingPage\Index.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\NewsPage\Index.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\ProductPage\Index.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\SearchPage\Index.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Preview\Index.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Shared\Components\ContactBlock\Default.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Shared\Components\ImageFile\Default.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Shared\Components\PageListBlock\Default.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Shared\Components\VideoFile\Default.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\StartPage\Index.cshtml" />
+    <_ContentIncludedByDefault Remove="wwwroot\css\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\css\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\css\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\css\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\css\images\ui-bg_glass_75_dadada_1x400.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\css\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\css\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\css\images\ui-icons_222222_256x240.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\css\images\ui-icons_2e83ff_256x240.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\css\images\ui-icons_454545_256x240.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\css\images\ui-icons_888888_256x240.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\css\images\ui-icons_cd0a0a_256x240.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\bootstrap.bundle.min.js" />
+    <_ContentIncludedByDefault Remove="Views\Shared\PagePartials\ContactPage.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Shared\PagePartials\Page.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Shared\PagePartials\PageWide.cshtml" />
   </ItemGroup>
 </Project>

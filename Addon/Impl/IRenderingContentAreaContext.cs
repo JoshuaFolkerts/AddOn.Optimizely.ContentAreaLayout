@@ -26,12 +26,12 @@ namespace RenderingLayoutProcessor.Impl
         void ContainerClose(IHtmlHelper htmlHelper);
 
         /// <summary>
-        /// The begining of a Context.  This is called whether the context contains any items or not.
+        /// The beginning of a Context.  This is called whether the context contains any items or not.
         /// </summary>
         void ContainerOpen(IHtmlHelper htmlHelper);
 
         /// <summary>
-        /// Return true if this IContentAreaContext is capable of containg the childContext.
+        /// Return true if this IContentAreaContext is capable of containing the childContext.
         /// Return false and this context will be closed a new context will be started for the
         /// childContext.
         /// </summary>

@@ -26,8 +26,6 @@ namespace RenderingLayoutProcessor.Impl
         private readonly ContentAreaRenderingOptions _contentAreaRenderingOptions;
         private readonly IModelTemplateTagResolver _modelTagResolver;
         private readonly ModelExplorerFactory _modelExplorerFactory;
-
-        private static readonly Action NOP = () => { };
         private bool? _isMethodsOverriden;
 
         public MultiColumnContentAreaRenderer()
@@ -54,6 +52,11 @@ namespace RenderingLayoutProcessor.Impl
             _modelTagResolver = modelTemplateTagResolver;
         }
 
+        public void RenderContentAreaItemsInternal(IHtmlHelper htmlHelper, IEnumerable<ContentAreaItem> contentAreaItems)
+        {
+            RenderContentAreaItems(htmlHelper, contentAreaItems);
+        }
+
         protected override void RenderContentAreaItems(IHtmlHelper htmlHelper,
             IEnumerable<ContentAreaItem> contentAreaItems)
         {
@@ -61,16 +64,17 @@ namespace RenderingLayoutProcessor.Impl
 
             foreach (var current in contentAreaItems)
             {
-                if (current.GetContent() is IRenderingLayoutBlock asLayoutBlock)
+                var content = _contentAreaLoader.Get(current);
+                if (content is IRenderingLayoutBlock asLayoutBlock)
                 {
                     var newContext = asLayoutBlock.NewContext();
-                    while (!newContext.CanNestUnder(currentContext))
+                    while (currentContext is not DefaultContentAreaContext && !newContext.CanNestUnder(currentContext))
                     {
                         currentContext.ContainerClose(htmlHelper);
                         currentContext = currentContext.ParentContext;
                     }
 
-                    while (!currentContext.CanContain(newContext))
+                    while (currentContext is not DefaultContentAreaContext && !currentContext.CanContain(newContext))
                     {
                         currentContext.ContainerClose(htmlHelper);
                         currentContext = currentContext.ParentContext;
@@ -106,11 +110,11 @@ namespace RenderingLayoutProcessor.Impl
 
                 currentContext.ItemClose(htmlHelper);
 
-                while (contextResult == RenderingProcessorAction.Close)
+                while (contextResult == RenderingProcessorAction.Close && currentContext is not DefaultContentAreaContext)
                 {
                     currentContext.ContainerClose(htmlHelper);
                     currentContext = currentContext.ParentContext;
-                    contextResult = currentContext.RenderItem(htmlHelper, null, NOP);
+                    contextResult = currentContext.RenderItem(htmlHelper, null,  () => { });
                 }
             }
 
@@ -132,10 +136,13 @@ namespace RenderingLayoutProcessor.Impl
             };
 
             if (contentAreaItem.RenderSettings != null)
+            {
                 // Merge the rendersettings from the content area with the render settings for the fragment
                 renderSettings = contentAreaItem.RenderSettings
                     .Concat(renderSettings.Where(r => !contentAreaItem.RenderSettings.ContainsKey(r.Key)))
                     .ToDictionary(r => r.Key, r => r.Value);
+            }
+
             // Store the render settings in the view bag.
             htmlHelper.ViewBag.RenderSettings = renderSettings;
 
@@ -168,23 +175,34 @@ namespace RenderingLayoutProcessor.Impl
 
             using (new ContentRenderingScope(htmlHelper.ViewContext.HttpContext, content, templateModel, tags))
             {
-                var tagBuilder = new TagBuilder(htmlTag);
+                var attributesToMerge =
+                    _attributeAssembler.GetAttributes(contentAreaItem, IsInEditMode(), templateModel != null);
+                var shouldHaveTag = attributesToMerge.Count > 0 || !string.IsNullOrEmpty(cssClass) || htmlTag != "div" || IsInEditMode();
+                var tagBuilder = shouldHaveTag
+                    ? new TagBuilder(htmlTag)
+                    : null;
 
-                AddNonEmptyCssClass(tagBuilder, cssClass);
+                if (tagBuilder is not null)
+                {
+                    tagBuilder = AddNonEmptyCssClass(tagBuilder, cssClass);
 
-                // Applies the required edit attributes to the fragment.
-                tagBuilder.MergeAttributes(
-                    _attributeAssembler.GetAttributes(contentAreaItem, IsInEditMode(), templateModel != null));
+                    // Applies the required edit attributes to the fragment.
+                    tagBuilder.MergeAttributes(attributesToMerge);
 
-                // Allow partners to modify the start tag before rendering.
-                BeforeRenderContentAreaItemStartTag(tagBuilder, contentAreaItem);
+                    // Allow partners to modify the start tag before rendering.
+                    BeforeRenderContentAreaItemStartTag(tagBuilder, contentAreaItem);
 
-                htmlHelper.ViewContext.Writer.Write(tagBuilder.RenderStartTag());
+                    tagBuilder.RenderOpenTo(htmlHelper);
+                }
+
 
                 // Render the content
                 htmlHelper.RenderContentData(content, true, templateModel, _contentRenderer);
 
-                htmlHelper.ViewContext.Writer.Write(tagBuilder.RenderEndTag());
+                if (tagBuilder is not null)
+                {
+                    tagBuilder.RenderCloseTo(htmlHelper);
+                }
             }
         }
 
@@ -193,9 +211,9 @@ namespace RenderingLayoutProcessor.Impl
             // Default behavior returns true by default if the hascontainer is not specified.
             // Overriding to return false if not specified
             // This only effects the div surrounding the entire content area, not individual items
-            var hasContainer = (bool?) htmlHelper.ViewContext.ViewData["hascontainer"];
-            var htmlTag = (string) htmlHelper.ViewContext.ViewData["customtag"];
-            var cssClass = (string) htmlHelper.ViewContext.ViewData["cssclass"];
+            var hasContainer = (bool?) htmlHelper.ViewContext?.ViewData["hascontainer"];
+            var htmlTag = (string) htmlHelper.ViewContext?.ViewData["customtag"];
+            var cssClass = (string) htmlHelper.ViewContext?.ViewData["cssclass"];
 
             return hasContainer.HasValue && hasContainer.Value
                    || htmlTag != null && htmlTag != "div"
@@ -204,7 +222,7 @@ namespace RenderingLayoutProcessor.Impl
 
         protected override string GetContentAreaItemCssClass(IHtmlHelper htmlHelper, ContentAreaItem contentAreaItem)
         {
-            if (contentAreaItem.GetContent() is IRenderingLayoutBlock)
+            if (_contentAreaLoader.Get(contentAreaItem) is IRenderingLayoutBlock)
                 return string.Empty;
 
             var tag = GetContentAreaItemTemplateTag(htmlHelper, contentAreaItem);

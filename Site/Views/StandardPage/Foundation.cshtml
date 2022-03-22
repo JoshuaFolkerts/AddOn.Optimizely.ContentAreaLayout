@@ -1,0 +1,14 @@
+@model Site.Models.StandardPage
+
+@{ Layout = "~/Views/Shared/Layouts/_Foundation.cshtml"; }
+
+<article class="grid-container">
+    <div class="grid-x">
+        <div class="cell">
+            <h1 @Html.EditAttributes(x => x.PageName)>@Model.PageName</h1>
+            @Html.PropertyFor(m => m.MainBody)
+        </div>
+    </div>
+    @Html.PropertyFor(x => x.MainContentArea)
+</article>
+
