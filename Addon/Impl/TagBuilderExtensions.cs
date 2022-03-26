@@ -1,7 +1,6 @@
-﻿using System.Text.Encodings.Web;
-using System.Web;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Net;
+using System.Text.Encodings.Web;
 
 namespace RenderingLayoutProcessor.Impl
 {
@@ -26,6 +25,6 @@ namespace RenderingLayoutProcessor.Impl
             => builder.RenderSelfClosingTag().WriteTo(helper.ViewContext.Writer, HtmlEncoder.Default);
 
         public static string Html(this string value)
-            => string.IsNullOrEmpty(value) ? string.Empty : HttpUtility.HtmlEncode(value);
+            => string.IsNullOrEmpty(value) ? string.Empty : WebUtility.HtmlEncode(value);
     }
 }

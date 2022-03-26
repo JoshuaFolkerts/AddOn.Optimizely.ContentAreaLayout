@@ -10,7 +10,6 @@ namespace Site.Models.MultiCol
     [TemplateDescriptor(AvailableWithoutTag = true, Inherited = true)]
     public class LayoutBlockComponent : BlockComponent<RenderingLayoutBlock>
     {
-
         protected override IViewComponentResult InvokeComponent(RenderingLayoutBlock currentContent)
         {
             return PageEditing.PageIsInEditMode

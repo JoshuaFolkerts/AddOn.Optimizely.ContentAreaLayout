@@ -8,6 +8,6 @@ namespace Site.Models.MultiCol
     public class FoundationLayoutBlock : RenderingLayoutBlock
     {
         public override IRenderingContentAreaContext NewContext() =>
-            new FoundationRenderingContext(new [] { 2, 8, 2 });
+            new FoundationRenderingContext(new[] { 2, 8, 2 });
     }
 }
