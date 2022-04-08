@@ -1,7 +1,8 @@
 @model RenderingLayoutProcessor.Models.ClearRenderingBlock
 @using EPiServer.Editor
+@inject IContextModeResolver contextModeResolver
 
-@if (PageEditing.PageIsInEditMode)
+@if (contextModeResolver.CurrentMode == ContextMode.Edit)
 {
     <div class="alert alert-dark alert-editmode" style="padding: 3px 6px 6px;">
         <div class="text-center fw-bold" style="font-size: 12px">@(((IContent)Model).Name)</div>

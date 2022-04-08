@@ -7,19 +7,19 @@
 	<IsPackable>true</IsPackable>
 	<DebugType>embedded</DebugType>
 	<PackageTags></PackageTags>
-	<PackageProjectUrl></PackageProjectUrl>
+	<PackageProjectUrl>https://github.com/JoshuaFolkerts/RenderingLayoutProcessor/tree/feature/net5</PackageProjectUrl>
 	<RepositoryUrl></RepositoryUrl>
 	<Copyright />
-	<Authors />
-	<Version>0.1.0</Version>
+	  <Authors>Joshua Folkerts, Erik Karrsgård, Blend Interactive</Authors>
+	<Version>5.0.4</Version>
 	<Company></Company>
-	<Description></Description>
+	<Description>RenderingLayoutProcessor is an extention to Episerver/Optimizely that makes it possible to add layout blocks that will control how the next x blocks will display.</Description>
 	<Product></Product>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="EPiServer.CMS" Version="12.2.0" />
+    <Compile Remove="ContentAreaRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Remove="ContentAreaRenderer.cs" />
+    <PackageReference Include="EPiServer.CMS" Version="12.2.0" />
   </ItemGroup>
 </Project>
