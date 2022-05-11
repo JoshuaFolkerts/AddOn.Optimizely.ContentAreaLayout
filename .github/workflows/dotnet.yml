@@ -1,0 +1,36 @@
+name: .NET
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  BUILD_CONFIGURATION: 'Release'
+  DOTNET_VERSION: '6.0.x'
+  CWD: './src'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    - name: Restore dependencies
+      run:  |
+        dotnet nuget add source https://nuget.episerver.com/feed/packages.svc --name Optimizely
+        dotnet restore
+    - name: Build
+      run: dotnet build --no-restore --configuration '${{ env.BUILD_CONFIGURATION }}'
+    - name: Test
+      run: dotnet test --no-build --configuration '${{ env.BUILD_CONFIGURATION }}' --verbosity normal
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        path: './Addon/bin/Release/*.nupkg'
