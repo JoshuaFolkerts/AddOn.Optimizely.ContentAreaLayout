@@ -1,6 +1,6 @@
 using System;
 using EPiServer.Core;
-using RenderingLayoutProcessor.Impl;
+using RenderingLayoutProcessor;
 
 namespace Tests
 {

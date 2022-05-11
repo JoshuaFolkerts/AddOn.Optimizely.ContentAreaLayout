@@ -1,15 +1,16 @@
 ﻿using System.Collections.Generic;
 
-namespace RenderingLayoutProcessor.Impl
+namespace RenderingLayoutProcessor.Context
 {
-    public class BootstrapRenderingContext : GridRenderingContext
+    public class FoundationRenderingContext : GridRenderingContext
     {
-        public BootstrapRenderingContext(int[] itemSizes = null)
-            : base(itemSizes) { }
+        public FoundationRenderingContext(int[] itemSizes = null) : base(itemSizes)
+        {
+        }
 
         protected override IEnumerable<string> GetRowClasses()
         {
-            return new[] { "row" };
+            return new[] { "grid-x" };
         }
 
         protected override IEnumerable<string> GetColumnClasses()
@@ -18,7 +19,7 @@ namespace RenderingLayoutProcessor.Impl
 
             _columnsRendered += currentColumn;
 
-            return new[] { $"col-{currentColumn}" };
+            return new[] { $"cell", $"medium-{currentColumn}" };
         }
     }
 }

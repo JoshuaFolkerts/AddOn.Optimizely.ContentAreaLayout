@@ -4,7 +4,7 @@ using EPiServer.Framework.DataAnnotations;
 using EPiServer.Web;
 using EPiServer.Web.Mvc;
 using Microsoft.AspNetCore.Mvc;
-using RenderingLayoutProcessor.Models;
+using RenderingLayoutProcessor.Block;
 
 namespace Site.Models.MultiCol
 {

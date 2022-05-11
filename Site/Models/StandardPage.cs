@@ -3,7 +3,7 @@ using EPiServer.Core;
 using EPiServer.DataAbstraction;
 using EPiServer.DataAnnotations;
 using EPiServer.Shell.ObjectEditing;
-using RenderingLayoutProcessor.Impl.EditorDescriptors;
+using RenderingLayoutProcessor.EditorDescriptor;
 
 namespace Site.Models
 {

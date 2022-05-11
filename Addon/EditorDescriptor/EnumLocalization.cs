@@ -1,10 +1,10 @@
-﻿using EPiServer.Framework.Localization;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
+using EPiServer.Framework.Localization;
 
-namespace RenderingLayoutProcessor.Impl.EditorDescriptors
+namespace RenderingLayoutProcessor.EditorDescriptor
 {
     public static class EnumLocalization
     {

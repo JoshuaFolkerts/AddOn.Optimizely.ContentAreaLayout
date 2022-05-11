@@ -1,11 +1,10 @@
 @model Site.Models.MultiCol.BootstrapLayoutBlock
-@using EPiServer.Editor
-@using Site.Models.MultiCol
+@inject IContextModeResolver ContextModeResolver
 
-@if (PageEditing.PageIsInEditMode)
+@if (ContextModeResolver.CurrentMode == ContextMode.Edit)
 {
     <div class="alert alert-dark alert-editmode" style="padding: 3px 6px 6px;">
-        <div class="text-center fw-bold" style="font-size: 12px">@(((EPiServer.Core.IContent)Model).Name)</div>
+        <div class="text-center fw-bold" style="font-size: 12px">@(((IContent)Model).Name)</div>
         <div class="row align-center">
             @* @for (var x = (int)Model.ColumnCount - 1; x >= 0; x--) *@
             @* { *@

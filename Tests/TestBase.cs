@@ -17,7 +17,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
 using Moq;
-using RenderingLayoutProcessor.Impl;
+using RenderingLayoutProcessor;
+using RenderingLayoutProcessor.Context;
 
 namespace Tests
 {
@@ -49,7 +50,7 @@ namespace Tests
             return context;
         }
         
-        protected (MultiColumnContentAreaRenderer, List<ContentAreaItem>, IHtmlHelper, StringWriter) SetupRenderer(IEnumerable<IContent> contentItems = null, IDictionary<string, string> attributes = null)
+        protected (MultiColumnContentAreaRenderer, List<ContentAreaItem>, IHtmlHelper, StringWriter) SetupRenderer(IEnumerable<IContent>? contentItems = null, IDictionary<string, string>? attributes = null)
         {
             var contentRenderer = new Mock<IContentRenderer>();
             var templateResolver = new Mock<ITemplateResolver>();
@@ -92,7 +93,7 @@ namespace Tests
             }
             
             contentAreaLoader.Setup(x => x.LoadDisplayOption(It.IsAny<ContentAreaItem>()))
-                .Returns((DisplayOption)null);
+                .Returns((DisplayOption)null!);
 
             contextModeResolver.Setup(x => x.CurrentMode).Returns(ContextMode.Default);
 

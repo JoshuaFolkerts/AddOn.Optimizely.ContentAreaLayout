@@ -1,6 +1,7 @@
 ﻿using EPiServer.DataAnnotations;
-using RenderingLayoutProcessor.Impl;
-using RenderingLayoutProcessor.Models;
+using RenderingLayoutProcessor;
+using RenderingLayoutProcessor.Block;
+using RenderingLayoutProcessor.Context;
 
 namespace Site.Models.MultiCol
 {

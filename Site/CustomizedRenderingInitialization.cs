@@ -5,7 +5,7 @@ using EPiServer.Web;
 using EPiServer.Web.Mvc;
 using EPiServer.Web.Mvc.Html;
 using Microsoft.Extensions.DependencyInjection;
-using RenderingLayoutProcessor.Impl;
+using RenderingLayoutProcessor;
 
 namespace Site
 {

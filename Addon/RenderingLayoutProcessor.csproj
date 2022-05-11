@@ -1,25 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-	  <TargetFramework>net5.0</TargetFramework>
-	  <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+	<TargetFrameworks>net5.0;net6.0</TargetFrameworks>
+	<GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <OutputType>Library</OutputType>
 	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	<IsPackable>true</IsPackable>
 	<DebugType>embedded</DebugType>
-	<PackageTags></PackageTags>
-	<PackageProjectUrl>https://github.com/JoshuaFolkerts/RenderingLayoutProcessor/tree/feature/net5</PackageProjectUrl>
-	<RepositoryUrl></RepositoryUrl>
+	<PackageTags>Episerver Optimizely AddOn</PackageTags>
+	<PackageProjectUrl>https://github.com/JoshuaFolkerts/RenderingLayoutProcessor</PackageProjectUrl>
+	<RepositoryUrl>https://github.com/JoshuaFolkerts/RenderingLayoutProcessor</RepositoryUrl>
 	<Copyright />
-	  <Authors>Joshua Folkerts, Erik Karrsgård, Blend Interactive</Authors>
+	<Authors>Joshua Folkerts, Erik Kärrsgård, Blend Interactive</Authors>
 	<Version>5.0.4</Version>
-	<Company></Company>
-	<Description>RenderingLayoutProcessor is an extention to Episerver/Optimizely that makes it possible to add layout blocks that will control how the next x blocks will display.</Description>
-	<Product></Product>
+	<Description>RenderingLayoutProcessor is an extension to Episerver/Optimizely that makes it possible to add layout blocks that will control how the next x blocks will display.</Description>
+	<Product>RenderingLayoutProcessor</Product>
   </PropertyGroup>
+
   <ItemGroup>
-    <Compile Remove="ContentAreaRenderer.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="EPiServer.CMS" Version="12.2.0" />
+    <PackageReference Include="EPiServer.CMS" Version="12.5.0" />
+	<FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 </Project>

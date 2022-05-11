@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace RenderingLayoutProcessor.Impl
+namespace RenderingLayoutProcessor.Extension
 {
     public static class ContentAreaContextExtensions
     {

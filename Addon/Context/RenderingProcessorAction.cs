@@ -1,4 +1,4 @@
-﻿namespace RenderingLayoutProcessor.Impl
+﻿namespace RenderingLayoutProcessor.Context
 {
     public enum RenderingProcessorAction
     {

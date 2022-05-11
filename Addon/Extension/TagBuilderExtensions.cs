@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Net;
+﻿using System.Net;
 using System.Text.Encodings.Web;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace RenderingLayoutProcessor.Impl
+namespace RenderingLayoutProcessor.Extension
 {
     public static class TagBuilderExtensions
     {

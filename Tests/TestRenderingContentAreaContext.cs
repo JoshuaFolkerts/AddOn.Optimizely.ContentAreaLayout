@@ -2,7 +2,9 @@ using System;
 using EPiServer.Core;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using RenderingLayoutProcessor.Impl;
+using RenderingLayoutProcessor;
+using RenderingLayoutProcessor.Context;
+using RenderingLayoutProcessor.Extension;
 
 namespace Tests
 {
@@ -30,6 +32,6 @@ namespace Tests
 
         public virtual bool CanNestUnder(IRenderingContentAreaContext parentContext) => true;
 
-        public IRenderingContentAreaContext ParentContext { get; set; }
+        public IRenderingContentAreaContext? ParentContext { get; set; }
     }
 }

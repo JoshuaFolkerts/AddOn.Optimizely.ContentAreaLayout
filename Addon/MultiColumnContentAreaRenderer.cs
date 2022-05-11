@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -11,8 +10,10 @@ using EPiServer.Web.Mvc;
 using EPiServer.Web.Mvc.Html;
 using EPiServer.Web.Templating;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using RenderingLayoutProcessor.Context;
+using RenderingLayoutProcessor.Extension;
 
-namespace RenderingLayoutProcessor.Impl
+namespace RenderingLayoutProcessor
 {
     /// <summary>
     ///     Extends the default <see cref="ContentAreaRenderer" /> to apply custom CSS classes to each
@@ -150,7 +151,7 @@ namespace RenderingLayoutProcessor.Impl
 
             if (content == null) return;
 
-            var tags = Enumerable.Empty<string>();
+            IEnumerable<string> tags;
             if (IsMethodsOverriden)
             {
                 //if partner has overriden our methods we run with partner code instead of default
@@ -165,7 +166,7 @@ namespace RenderingLayoutProcessor.Impl
             else
             {
                 tags = _modelTagResolver.Resolve(_modelExplorerFactory.CreateFromModel(contentAreaItem),
-                    htmlHelper.ViewContext);
+                    htmlHelper.ViewContext).ToArray();
             }
 
             // Resolve the template for the content fragment based on the given template tag.
@@ -229,7 +230,7 @@ namespace RenderingLayoutProcessor.Impl
             var list = new List<string>();
 
             if (htmlHelper.ViewData["childrencssclass"] != null)
-                list.Add(htmlHelper.ViewData["childrencssclass"].ToString().ToLowerInvariant().Trim());
+                list.Add(htmlHelper.ViewData["childrencssclass"].ToString()?.ToLowerInvariant().Trim());
 
             if (!string.IsNullOrWhiteSpace(tag))
                 list.Add(tag.ToLowerInvariant().Trim());
@@ -246,11 +247,11 @@ namespace RenderingLayoutProcessor.Impl
                     var isTemplateTagOverriden =
                         GetType().GetMethod(nameof(GetContentAreaTemplateTag),
                                 BindingFlags.Instance | BindingFlags.NonPublic, null, new[] {typeof(IHtmlHelper)}, null)
-                            .DeclaringType != typeof(ContentAreaRenderer);
+                            ?.DeclaringType != typeof(ContentAreaRenderer);
                     var isItemTemplateTagOverriden = GetType().GetMethod(nameof(GetContentAreaItemTemplateTag),
                                                          BindingFlags.Instance | BindingFlags.NonPublic, null,
                                                          new[] {typeof(IHtmlHelper), typeof(ContentAreaItem)}, null)
-                                                     .DeclaringType !=
+                                                         ?.DeclaringType !=
                                                      typeof(ContentAreaRenderer);
                     _isMethodsOverriden = isTemplateTagOverriden || isItemTemplateTagOverriden;
                 }

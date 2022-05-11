@@ -1,8 +1,9 @@
-﻿using EPiServer.Core;
-using System;
+﻿using System;
+using EPiServer.Core;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using RenderingLayoutProcessor.Context;
 
-namespace RenderingLayoutProcessor.Impl
+namespace RenderingLayoutProcessor
 {
     public interface IRenderingContentAreaContext
     {
@@ -26,7 +27,7 @@ namespace RenderingLayoutProcessor.Impl
         void ContainerClose(IHtmlHelper htmlHelper);
 
         /// <summary>
-        /// The beginning of a Context.  This is called whether the context contains any items or not.
+        /// The beginning of a Context. This is called whether the context contains any items or not.
         /// </summary>
         void ContainerOpen(IHtmlHelper htmlHelper);
 

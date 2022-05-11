@@ -1,8 +1,8 @@
-﻿using EPiServer.Core;
-using System;
+﻿using System;
+using EPiServer.Core;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace RenderingLayoutProcessor.Impl
+namespace RenderingLayoutProcessor.Context
 {
     /// <summary>
     /// Clears all other context's

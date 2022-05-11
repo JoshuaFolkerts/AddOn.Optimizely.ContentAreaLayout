@@ -1,7 +1,6 @@
 ﻿using EPiServer.Core;
-using RenderingLayoutProcessor.Impl;
 
-namespace RenderingLayoutProcessor.Models
+namespace RenderingLayoutProcessor.Block
 {
     public abstract class RenderingLayoutBlock : BlockData, IRenderingLayoutBlock
     {
