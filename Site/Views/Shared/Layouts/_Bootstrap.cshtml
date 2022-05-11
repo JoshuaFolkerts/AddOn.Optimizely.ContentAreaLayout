@@ -1,0 +1,31 @@
+@using EPiServer.Framework.Web.Mvc.Html
+
+@model Site.Models.StandardPage
+
+@{
+    var css = Model.CssFramework == CssFramework.Bootstrap ? "~/Bootstrap/bootstrap.min.css" : "~/Foundation/Foundation.min.css";
+    var js = Model.CssFramework == CssFramework.Bootstrap ? "~/Bootstrap/bootstrap.bundle.min.js" : "~/Foundation/Foundation.min.js";
+}
+<!DOCTYPE html>
+<html lang="@(Model.Language)">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@Model.Name</title>
+    @Html.CanonicalLink()
+    @Html.AlternateLinks()
+    <link rel="stylesheet" href="~/Bootstrap/bootstrap.min.css" />
+    @Html.RequiredClientResources("Header")
+</head>
+
+<body>
+    @await Html.RenderEPiServerQuickNavigatorAsync()
+    @Html.FullRefreshPropertiesMetaData()
+    @{ await Html.RenderPartialAsync("Header", Model); }
+
+    @RenderBody()
+
+    @Html.RequiredClientResources("Footer")
+    <script src="~/Bootstrap/bootstrap.bundle.min.js"></script>
+</body>
+</html>

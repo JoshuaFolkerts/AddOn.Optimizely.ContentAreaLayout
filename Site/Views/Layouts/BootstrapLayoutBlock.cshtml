@@ -1,0 +1,21 @@
+@model Site.Models.MultiCol.BootstrapLayoutBlock
+@inject IContextModeResolver ContextModeResolver
+
+@if (ContextModeResolver.CurrentMode == ContextMode.Edit)
+{
+    <div class="alert alert-dark alert-editmode" style="padding: 3px 6px 6px;">
+        <div class="text-center fw-bold" style="font-size: 12px">@(((IContent)Model).Name)</div>
+        <div class="row align-center">
+            @* @for (var x = (int)Model.ColumnCount - 1; x >= 0; x--) *@
+            @* { *@
+            @*     <div class="@Model.ColumnCount.ColumnCssClass(Model.ColumnsBreakPoint)"> *@
+            @*         <hr style="margin: 3px 0; border-color: #000; background-color: #000;"/> *@
+            @*     </div> *@
+            @* } *@
+            
+            <div>
+                <hr style="margin: 3px 0; border-color: #000; background-color: #000;"/>
+            </div>
+        </div>
+    </div>
+}

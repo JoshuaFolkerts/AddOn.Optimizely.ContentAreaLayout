@@ -1,0 +1,14 @@
+@model Site.Models.StandardPage
+
+@{ Layout = "~/Views/Shared/Layouts/_Bootstrap.cshtml"; }
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h1 class="mt-3" @Html.EditAttributes(x => x.PageName)>@Model.PageName</h1>
+            @Html.PropertyFor(m => m.MainBody)
+        </div>
+    </div>
+    @Html.PropertyFor(x => x.MainContentArea)
+</div>
+
