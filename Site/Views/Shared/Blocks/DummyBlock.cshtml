@@ -1,4 +1,11 @@
+@using RenderingLayoutProcessor.Extension;
 @model DummyBlock
-<div style="background-color: #0dcaf0; padding: 1rem; margin: 1rem">
-        Dummy
+@{
+    var blockMetaData = Html.BlockMetaData();
+}
+<div style="background-color: #0dcaf0; padding: 1rem; margin: 1rem" >
+    Dummy<br/>
+    Index: @blockMetaData.BlockIndex <br/>
+    Content Link ID: @blockMetaData.BlockContentLink.ID <br/>
+    Content Link Guid: @blockMetaData.BlockContentGuid <br/>
 </div>

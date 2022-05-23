@@ -129,6 +129,9 @@ namespace RenderingLayoutProcessor
         protected override void RenderContentAreaItem(IHtmlHelper htmlHelper, ContentAreaItem contentAreaItem,
             string templateTag, string htmlTag, string cssClass)
         {
+            htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Block.Index] = (int?)htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Block.Index] + 1 ?? 0;
+            htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Block.ContentGuid] = contentAreaItem.ContentGuid;
+            htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Block.ContentLink] = contentAreaItem.ContentLink;
             var renderSettings = new Dictionary<string, object>
             {
                 [RenderSettings.ChildrenCustomTag] = htmlTag,
