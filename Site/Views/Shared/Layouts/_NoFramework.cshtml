@@ -1,0 +1,26 @@
+@using EPiServer.Framework.Web.Mvc.Html
+
+@model Site.Models.StandardPage
+
+<!DOCTYPE html>
+<html lang="@(Model.Language)">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@Model.Name</title>
+    @Html.CanonicalLink()
+    @Html.AlternateLinks()
+    @*<link rel="stylesheet" href="~/Foundation/Foundation.min.css" />*@
+    @Html.RequiredClientResources("Header")
+</head>
+
+<body>
+    @await Html.RenderEPiServerQuickNavigatorAsync()
+    @Html.FullRefreshPropertiesMetaData()
+    @{ await Html.RenderPartialAsync("Header", Model); }
+
+    @RenderBody()
+
+    @*<script src="~/Foundation/Foundation.min.js"></script>*@
+</body>
+</html>

@@ -62,16 +62,19 @@ namespace RenderingLayoutProcessor
             IEnumerable<ContentAreaItem> contentAreaItems)
         {
             IRenderingContentAreaContext currentContext = DefaultContentAreaContext.Instance;
-
             foreach (var current in contentAreaItems)
             {
                 var content = _contentAreaLoader.Get(current);
                 if (content is IRenderingLayoutBlock asLayoutBlock)
                 {
                     var newContext = asLayoutBlock.NewContext();
+                    htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Layout.ContentLink] = current.ContentLink;
+                    htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Layout.ContentGuid] = current.ContentGuid;
+                    htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Layout.Index] = (int?)htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Layout.Index] + 1 ?? 0;
                     while (currentContext is not DefaultContentAreaContext && !newContext.CanNestUnder(currentContext))
                     {
                         currentContext.ContainerClose(htmlHelper);
+                        
                         currentContext = currentContext.ParentContext;
                     }
 
@@ -83,7 +86,8 @@ namespace RenderingLayoutProcessor
 
                     newContext.ParentContext = currentContext;
                     newContext.ContainerOpen(htmlHelper);
-
+                    htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Block.Index] = -1;
+                    
                     RenderContentAreaItem(
                         htmlHelper,
                         current,
@@ -101,16 +105,21 @@ namespace RenderingLayoutProcessor
                 var contextResult = currentContext.RenderItem(htmlHelper, current,
                     () =>
                     {
+                        var tag = GetContentAreaItemTemplateTag(htmlHelper, current);
+                        htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Block.Index] = (int?)htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Block.Index] + 1 ?? 0;
+                        htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Block.ContentGuid] = current.ContentGuid;
+                        htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Block.ContentLink] = current.ContentLink;
+                        htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Block.Tag] = tag;
                         RenderContentAreaItem(
                             htmlHelper,
                             current,
-                            GetContentAreaItemTemplateTag(htmlHelper, current),
+                            tag,
                             GetContentAreaItemHtmlTag(htmlHelper, current),
                             GetContentAreaItemCssClass(htmlHelper, current));
                     });
 
                 currentContext.ItemClose(htmlHelper);
-
+                
                 while (contextResult == RenderingProcessorAction.Close && currentContext is not DefaultContentAreaContext)
                 {
                     currentContext.ContainerClose(htmlHelper);
@@ -129,9 +138,6 @@ namespace RenderingLayoutProcessor
         protected override void RenderContentAreaItem(IHtmlHelper htmlHelper, ContentAreaItem contentAreaItem,
             string templateTag, string htmlTag, string cssClass)
         {
-            htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Block.Index] = (int?)htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Block.Index] + 1 ?? 0;
-            htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Block.ContentGuid] = contentAreaItem.ContentGuid;
-            htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Block.ContentLink] = contentAreaItem.ContentLink;
             var renderSettings = new Dictionary<string, object>
             {
                 [RenderSettings.ChildrenCustomTag] = htmlTag,
