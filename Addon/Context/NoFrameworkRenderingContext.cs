@@ -11,20 +11,10 @@ namespace RenderingLayoutProcessor.Context
     {
         public IRenderingContentAreaContext ParentContext { get; set; }
 
-        protected readonly int[] _itemSizes;
-
-        protected readonly int _numberOfColumns;
-
-        protected int _renderedItemsCount;
-
-        protected int _columnsRendered;
-
         protected bool _enableContainerWrapper;
 
         public NoFrameworkRenderingContext()
         {
-            _itemSizes = new[] { 2, 4, 6 };
-            _numberOfColumns = _itemSizes.Sum();
         }
 
         public void ContainerOpen(IHtmlHelper htmlHelper)
@@ -44,8 +34,6 @@ namespace RenderingLayoutProcessor.Context
             rowTag.MergeAttribute("data-layout", blockMetaData.LayoutContentLink.ID.ToString());
             rowTag.MergeAttribute("data-layout-index", blockMetaData.LayoutIndex.ToString());
             rowTag.RenderOpenTo(htmlHelper);
-            
-            
         }
 
         private void ProcessContainer(IHtmlHelper htmlHelper)
@@ -82,10 +70,7 @@ namespace RenderingLayoutProcessor.Context
         public RenderingProcessorAction RenderItem(IHtmlHelper htmlHelper, ContentAreaItem current, Action renderItem)
         {
             renderItem();
-            _renderedItemsCount++;
-            return _renderedItemsCount >= _itemSizes.Length ?
-                RenderingProcessorAction.Close :
-                RenderingProcessorAction.Continue;
+            return RenderingProcessorAction.Close;
         }
 
         public void ItemClose(IHtmlHelper htmlHelper)
