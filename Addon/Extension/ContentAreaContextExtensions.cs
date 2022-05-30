@@ -1,10 +1,13 @@
 ﻿using EPiServer.Core;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using RenderingLayoutProcessor.Block;
+using RenderingLayoutProcessor.Models;
 using RenderingLayoutProcessor.Context;
 using System;
 using System.Collections.Generic;
+using EPiServer.ServiceLocation;
+using EPiServer.DataAbstraction;
+using EPiServer;
 
 namespace RenderingLayoutProcessor.Extension
 {
@@ -21,45 +24,43 @@ namespace RenderingLayoutProcessor.Extension
 
         public static BlockRenderingMetaData BlockMetaData(this IHtmlHelper instance)
         {
-            // var contentAreaMetaData = instance.ViewData[RenderingMetadataKeys.MetaData] as ContentAreaMetaData ?? ContentSection.ContentAreaMetaData.Empty;
-            var blockIndex = (int?)instance.ViewData[RenderingMetadataKeys.Block.Index] ?? -1;
-            var blockContentGuid = (Guid?)instance.ViewData[RenderingMetadataKeys.Block.ContentGuid] ?? Guid.Empty;
-            var blockContentReference = (ContentReference)instance.ViewData[RenderingMetadataKeys.Block.ContentLink] ?? ContentReference.EmptyReference;
-            var blockTag = (string?)instance.ViewData[RenderingMetadataKeys.Block.Tag] ?? string.Empty;
+            var blockMetaData = instance.ViewData[RenderingMetadataKeys.Block] as BlockRenderingMetaData ?? null;
+            var layoutMetaData = instance.ViewData[RenderingMetadataKeys.Layout] as BlockRenderingMetaData ?? null;
+            blockMetaData.ParentMetaData = layoutMetaData ?? new BlockRenderingMetaData();
 
-            var layoutIndex = (int?)instance.ViewData[RenderingMetadataKeys.Layout.Index] ?? -1;
-            var layoutContentGuid = (Guid?)instance.ViewData[RenderingMetadataKeys.Layout.ContentGuid] ?? Guid.Empty;
-            var layoutContentReference = (ContentReference)instance.ViewData[RenderingMetadataKeys.Layout.ContentLink] ?? ContentReference.EmptyReference;
-            var layoutTag = (string?)instance.ViewData[RenderingMetadataKeys.Layout.Tag] ?? string.Empty;
+            return blockMetaData;
+        }
 
-            return new BlockRenderingMetaData
+        public static string GetContentTypeName(this BlockRenderingMetaData instance, IContentLoader contentLoader = null, IContentTypeRepository contentTypeRepository = null)
+        {
+            if (ContentReference.IsNullOrEmpty(instance.ContentLink))
             {
-                BlockIndex = blockIndex,
-                BlockContentGuid = blockContentGuid,
-                BlockContentLink = blockContentReference,
-                BlockTag = blockTag,
-                LayoutIndex = layoutIndex,
-                LayoutContentGuid = layoutContentGuid,
-                LayoutContentLink = layoutContentReference,
-                LayoutTag = layoutTag
-            };
+                return null;
+            }
+            contentLoader ??= ServiceLocator.Current.GetInstance<IContentLoader>();
+            if (!contentLoader.TryGet<IContent>(instance.ContentLink, out IContent content))
+            {
+                return null;
+            }
+            contentTypeRepository ??= ServiceLocator.Current.GetInstance<IContentTypeRepository>();
+            var contentType = contentTypeRepository.Load(content.ContentTypeID);
+            return contentType.Name;
         }
 
         public static Dictionary<string, string> BlockMetaDataDictionary(this BlockRenderingMetaData instance, bool allKeys = false)
         {
-
             var dictionary = new Dictionary<string, string>();
             if (instance is null)
             {
                 return dictionary;
             }
 
-            dictionary.Add("block-index", instance.BlockIndex.ToString());
-            dictionary.Add("block", instance.BlockContentLink.ID.ToString());
-            dictionary.Add("block-tag", instance.BlockTag);
+            dictionary.Add("block-index", instance.Index.ToString());
+            dictionary.Add("block", instance.ContentLink.ID.ToString());
+            dictionary.Add("block-tag", instance.Tag);
             if (allKeys)
             {
-                dictionary.Add("block-guid", instance.BlockContentGuid.ToString());
+                dictionary.Add("block-guid", instance.ContentGuid.ToString());
             }
             return dictionary;
         }

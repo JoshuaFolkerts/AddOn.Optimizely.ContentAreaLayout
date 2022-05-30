@@ -2,19 +2,22 @@
 @model DummyBlock
 @{
     var blockMetaData = Html.BlockMetaData();
-    var uniqueId = string.Format("dummyblock-{0}-{1}-{2}", blockMetaData.BlockContentLink.ID, blockMetaData.BlockIndex, blockMetaData.LayoutIndex);
+    var uniqueId = string.Format("dummyblock-{0}-{1}-{2}", blockMetaData.ContentLink.ID, blockMetaData.Index, blockMetaData.ParentMetaData.Index);
 }
 <div id="@uniqueId" @Html.Raw(blockMetaData.BlockMetaDataDictionary().ToAttributes())>
     <strong>Dummy block</strong><br/>
     <label for="@(uniqueId + "-checkbox")" role="button">Toggle metadata</label>
     <input type="checkbox" id="@(uniqueId + "-checkbox")" hidden/>
+    
     <table class="table-debug" style="" cellpadding="3">
-        <tr><th>Block Index:</th><td>@blockMetaData.BlockIndex</td></tr>
-        <tr><th>Block Content ID</th><td>@blockMetaData.BlockContentLink.ID</td></tr>
-        <tr><th>Block Content Guid</th><td style="text-overflow: ellipsis;overflow: hidden;white-space: nowrap;">@blockMetaData.BlockContentGuid</td></tr>
-        <tr><th>Layout Index</th><td>@blockMetaData.LayoutIndex</td></tr>
-        <tr><th>Layout Content ID</th><td>@blockMetaData.LayoutContentLink.ID</td></tr>
-        <tr><th>Layout Content Guid</th><td style="text-overflow: ellipsis;overflow: hidden;white-space: nowrap;">@blockMetaData.LayoutContentGuid</td></tr>
+        <tr><th>Block Type:</th><td>@blockMetaData.GetContentTypeName()</td></tr>
+        <tr><th>Block Index:</th><td>@blockMetaData.Index</td></tr>
+        <tr><th>Block Content ID</th><td>@blockMetaData.ContentLink.ID</td></tr>
+        <tr><th>Block Content Guid</th><td style="text-overflow: ellipsis;overflow: hidden;white-space: nowrap;">@blockMetaData.ContentGuid</td></tr>
+        <tr><th>Layout Type:</th><td>@blockMetaData.ParentMetaData.GetContentTypeName()</td></tr>
+        <tr><th>Layout Index</th><td>@blockMetaData.ParentMetaData.Index</td></tr>
+        <tr><th>Layout Content ID</th><td>@blockMetaData.ParentMetaData.ContentLink.ID</td></tr>
+        <tr><th>Layout Content Guid</th><td style="text-overflow: ellipsis;overflow: hidden;white-space: nowrap;">@blockMetaData.ParentMetaData.ContentGuid</td></tr>
     </table>
 </div>
 <style>

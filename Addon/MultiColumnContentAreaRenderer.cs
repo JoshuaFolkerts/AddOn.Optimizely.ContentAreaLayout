@@ -12,6 +12,7 @@ using EPiServer.Web.Templating;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using RenderingLayoutProcessor.Context;
 using RenderingLayoutProcessor.Extension;
+using RenderingLayoutProcessor.Models;
 
 namespace RenderingLayoutProcessor
 {
@@ -65,12 +66,25 @@ namespace RenderingLayoutProcessor
             foreach (var current in contentAreaItems)
             {
                 var content = _contentAreaLoader.Get(current);
+
+                htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Block] = new BlockRenderingMetaData()
+                {
+                    ContentLink = current.ContentLink,
+                    ContentGuid = current.ContentGuid,
+                    Tag = GetContentAreaItemTemplateTag(htmlHelper, current),
+                    Index = (int?)(htmlHelper?.ViewContext?.ViewData[RenderingMetadataKeys.Block] as BlockRenderingMetaData)?.Index + 1 ?? 0
+                };
+
                 if (content is IRenderingLayoutBlock asLayoutBlock)
                 {
                     var newContext = asLayoutBlock.NewContext();
-                    htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Layout.ContentLink] = current.ContentLink;
-                    htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Layout.ContentGuid] = current.ContentGuid;
-                    htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Layout.Index] = (int?)htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Layout.Index] + 1 ?? 0;
+                    htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Layout] = new BlockRenderingMetaData() {
+                        ContentLink = current.ContentLink,
+                        ContentGuid = current.ContentGuid,
+                        Tag = GetContentAreaItemTemplateTag(htmlHelper, current),
+                        Index = (int?)(htmlHelper?.ViewContext?.ViewData[RenderingMetadataKeys.Layout] as BlockRenderingMetaData)?.Index + 1 ?? 0
+                    };
+
                     while (currentContext is not DefaultContentAreaContext && !newContext.CanNestUnder(currentContext))
                     {
                         currentContext.ContainerClose(htmlHelper);
@@ -86,8 +100,9 @@ namespace RenderingLayoutProcessor
 
                     newContext.ParentContext = currentContext;
                     newContext.ContainerOpen(htmlHelper);
-                    htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Block.Index] = -1;
-                    
+                    // Reset the index when opening a new container. Otherwise we don't count the index per layout
+                    (htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Block] as BlockRenderingMetaData).Index = -1;
+
                     RenderContentAreaItem(
                         htmlHelper,
                         current,
@@ -105,15 +120,10 @@ namespace RenderingLayoutProcessor
                 var contextResult = currentContext.RenderItem(htmlHelper, current,
                     () =>
                     {
-                        var tag = GetContentAreaItemTemplateTag(htmlHelper, current);
-                        htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Block.Index] = (int?)htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Block.Index] + 1 ?? 0;
-                        htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Block.ContentGuid] = current.ContentGuid;
-                        htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Block.ContentLink] = current.ContentLink;
-                        htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Block.Tag] = tag;
                         RenderContentAreaItem(
                             htmlHelper,
                             current,
-                            tag,
+                            GetContentAreaItemTemplateTag(htmlHelper, current),
                             GetContentAreaItemHtmlTag(htmlHelper, current),
                             GetContentAreaItemCssClass(htmlHelper, current));
                     });
