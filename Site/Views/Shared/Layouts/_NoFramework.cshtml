@@ -10,7 +10,7 @@
     <title>@Model.Name</title>
     @Html.CanonicalLink()
     @Html.AlternateLinks()
-    @*<link rel="stylesheet" href="~/Foundation/Foundation.min.css" />*@
+    <link rel="stylesheet" href="~/NoFramework/main.css" />
     @Html.RequiredClientResources("Header")
 </head>
 
@@ -20,7 +20,5 @@
     @{ await Html.RenderPartialAsync("Header", Model); }
 
     @RenderBody()
-
-    @*<script src="~/Foundation/Foundation.min.js"></script>*@
 </body>
 </html>

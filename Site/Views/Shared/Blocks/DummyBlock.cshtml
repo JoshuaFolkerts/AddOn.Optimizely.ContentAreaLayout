@@ -2,10 +2,13 @@
 @model DummyBlock
 @{
     var blockMetaData = Html.BlockMetaData();
-    
+    var uniqueId = string.Format("dummyblock-{0}-{1}-{2}", blockMetaData.BlockContentLink.ID, blockMetaData.BlockIndex, blockMetaData.LayoutIndex);
 }
-<div style="background-color: #0dcaf0; padding: 1rem; margin: 1rem;" @Html.Raw(blockMetaData.BlockMetaDataDictionary().ToAttributes())>
-    <table class="table-debug" style="font-size:0.8em;table-layout:fixed;width: 100%;" cellpadding="3">
+<div id="@uniqueId" @Html.Raw(blockMetaData.BlockMetaDataDictionary().ToAttributes())>
+    <strong>Dummy block</strong><br/>
+    <label for="@(uniqueId + "-checkbox")" role="button">Toggle metadata</label>
+    <input type="checkbox" id="@(uniqueId + "-checkbox")" hidden/>
+    <table class="table-debug" style="" cellpadding="3">
         <tr><th>Block Index:</th><td>@blockMetaData.BlockIndex</td></tr>
         <tr><th>Block Content ID</th><td>@blockMetaData.BlockContentLink.ID</td></tr>
         <tr><th>Block Content Guid</th><td style="text-overflow: ellipsis;overflow: hidden;white-space: nowrap;">@blockMetaData.BlockContentGuid</td></tr>
@@ -14,4 +17,22 @@
         <tr><th>Layout Content Guid</th><td style="text-overflow: ellipsis;overflow: hidden;white-space: nowrap;">@blockMetaData.LayoutContentGuid</td></tr>
     </table>
 </div>
-    
+<style>
+#@uniqueId {
+    background-color: #0dcaf0; 
+    padding: 1rem; 
+    margin: 1rem;
+}
+#@uniqueId label {
+    cursor:pointer;
+}
+#@uniqueId table {
+    font-size:0.8em;
+    table-layout:fixed;
+    width: 100%;
+}
+
+#@uniqueId input:not(:checked) + table {
+    display:none;
+}
+</style>

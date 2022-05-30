@@ -1,0 +1,103 @@
+html {
+    box-sizing: border-box;
+    font-size: 100%;
+        -webkit-text-size-adjust: 100%;
+}
+
+*, ::after, ::before {
+    -webkit-box-sizing: inherit;
+    box-sizing: inherit;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background: #fefefe;
+    font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #0a0a0a;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+blockquote, dd, div, dl, dt, form, h1, h2, h3, h4, h5, h6, li, ol, p, pre, td, th, ul {
+    margin: 0;
+    padding: 0;
+}
+
+
+.top-bar, .top-bar ul {
+    background-color: #e6e6e6;
+}
+.top-bar {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    flex-wrap: wrap;
+}
+@media print, screen and (min-width: 40em) {
+    .top-bar {
+        flex-wrap: nowrap;
+    }
+}
+
+@media print, screen and (min-width: 40em) {
+    .top-bar .top-bar-left {
+        flex: 1 1 auto;
+        margin-right: auto;
+    }
+}
+.top-bar .top-bar-left, .top-bar .top-bar-right {
+    flex: 0 0 100%;
+    max-width: 100%;
+}
+.top-bar-left, .top-bar-right {
+    flex: 0 0 auto;
+}
+
+.menu, .menu.horizontal {
+    flex-wrap: wrap;
+    flex-direction: row;
+}
+
+.menu {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+li {
+    font-size: inherit;
+}
+
+.menu a, .menu button, .menu input, .menu select {
+    margin-bottom: 0;
+}
+
+.menu .button, .menu a {
+    line-height: 1;
+    text-decoration: none;
+    display: block;
+    padding: 0.7rem 1rem;
+}
+a {
+    line-height: inherit;
+    color: #1779ba;
+    text-decoration: none;
+    cursor: pointer;
+}
+a {
+    background-color: transparent;
+}
+
+.container {
+    max-width: 75rem;
+    margin-left: auto;
+    margin-right: auto;
+}
