@@ -2,11 +2,11 @@
 
 namespace RenderingLayoutProcessor.Attributes
 {
-    public class RenderAttribute : Attribute
+    public class PropertyToHtmlAttributeAttribute : Attribute
     {
         private string attributeName;
         private bool renderIfEmpty = false;
-        public RenderAttribute(string attributeName = null, bool renderIfEmpty = false)
+        public PropertyToHtmlAttributeAttribute(string attributeName = null, bool renderIfEmpty = false)
         {
             this.attributeName = attributeName;
             this.renderIfEmpty = renderIfEmpty;

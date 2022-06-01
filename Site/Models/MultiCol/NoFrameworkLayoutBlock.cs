@@ -18,7 +18,7 @@ namespace Site.Models.MultiCol
             Description = "",
             Order = 100)]
         [CultureSpecific]
-        [RenderAttribute]
+        [PropertyToHtmlAttribute]
         public virtual string Background { get; set; }
 
         [Display(
@@ -26,7 +26,7 @@ namespace Site.Models.MultiCol
             Description = "",
             Order = 200)]
         [CultureSpecific]
-        [RenderAttribute("aria-hidden", true)]
+        [PropertyToHtmlAttribute("aria-hidden", true)]
         public virtual bool Hidden { get; set; }
     }
 }

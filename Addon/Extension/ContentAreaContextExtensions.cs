@@ -37,7 +37,7 @@ namespace RenderingLayoutProcessor.Extension
         {
             var attributes = new Dictionary<string, string>();
             
-            var renderAttributeProperties = instance.GetType().GetProperties().Where(prop => Attribute.IsDefined(prop, typeof(RenderAttribute)));
+            var renderAttributeProperties = instance.GetType().GetProperties().Where(prop => Attribute.IsDefined(prop, typeof(PropertyToHtmlAttributeAttribute)));
             var contentType = instance.GetType();
             foreach (var attributeProp in renderAttributeProperties)
             {
@@ -50,7 +50,7 @@ namespace RenderingLayoutProcessor.Extension
                     propertyValue = propertyValue.ToLowerInvariant();
                 }
 
-                var renderAttribute = contentType.GetProperty(attributeProp.Name).GetCustomAttribute<RenderAttribute>();
+                var renderAttribute = contentType.GetProperty(attributeProp.Name).GetCustomAttribute<PropertyToHtmlAttributeAttribute>();
                 if (string.IsNullOrEmpty(propertyValue) && !renderAttribute.RenderIfEmpty)
                 {
                     continue;
