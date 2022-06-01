@@ -70,7 +70,7 @@ namespace RenderingLayoutProcessor.Context
         public RenderingProcessorAction RenderItem(IHtmlHelper htmlHelper, ContentAreaItem current, Action renderItem)
         {
             renderItem();
-            return RenderingProcessorAction.Close;
+            return RenderingProcessorAction.Continue;
         }
 
         public void ItemClose(IHtmlHelper htmlHelper)
