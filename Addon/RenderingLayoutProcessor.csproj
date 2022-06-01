@@ -11,7 +11,7 @@
 	<RepositoryUrl>https://github.com/JoshuaFolkerts/RenderingLayoutProcessor</RepositoryUrl>
 	<Copyright />
 	<Authors>Joshua Folkerts, Erik Kärrsgård, Blend Interactive, Wezz Balk</Authors>
-	<Version>5.0.5</Version>
+	<Version>5.0.6</Version>
 	<Description>RenderingLayoutProcessor is an extension to Episerver/Optimizely that makes it possible to add layout blocks that will control how the next x blocks will display.</Description>
 	<Product>RenderingLayoutProcessor</Product>
   </PropertyGroup>
