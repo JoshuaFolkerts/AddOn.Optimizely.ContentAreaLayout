@@ -7,13 +7,13 @@ using RenderingLayoutProcessor.Extension;
 
 namespace RenderingLayoutProcessor.Context
 {
-    public class NoFrameworkRenderingContext : IRenderingContentAreaContext
+    public class AttributeRenderingContext : IRenderingContentAreaContext
     {
         public IRenderingContentAreaContext ParentContext { get; set; }
 
         protected bool _enableContainerWrapper;
 
-        public NoFrameworkRenderingContext()
+        public AttributeRenderingContext()
         {
         }
 

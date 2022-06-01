@@ -9,6 +9,6 @@ namespace Site.Models.MultiCol
     public class NoFrameworkLayoutBlock : RenderingLayoutBlock
     {
         public override IRenderingContentAreaContext NewContext() =>
-            new NoFrameworkRenderingContext();
+            new AttributeRenderingContext();
     }
 }
