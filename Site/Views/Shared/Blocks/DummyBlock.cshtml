@@ -1,23 +1,23 @@
 @using RenderingLayoutProcessor.Extension;
 @model DummyBlock
 @{
-    var blockMetaData = Html.BlockMetaData();
-    var uniqueId = string.Format("dummyblock-{0}-{1}-{2}", blockMetaData.ContentLink.ID, blockMetaData.Index, blockMetaData.ParentMetaData.Index);
+    var blockMetadata = Html.BlockMetadata();
+    var uniqueId = string.Format("dummyblock-{0}-{1}-{2}", blockMetadata.ContentLink.ID, blockMetadata.Index, blockMetadata.ParentMetadata.Index);
 }
-<div id="@uniqueId" @Html.Raw(blockMetaData.BlockMetaDataDictionary().ToAttributes())>
+<div id="@uniqueId" @Html.Raw(blockMetadata.BlockMetadataDictionary().ToAttributes())>
     <strong>Dummy block</strong><br/>
     <label for="@(uniqueId + "-checkbox")" role="button">Toggle metadata</label>
     <input type="checkbox" id="@(uniqueId + "-checkbox")" hidden/>
     
     <table class="table-debug" style="" cellpadding="3">
-        <tr><th>Block Type:</th><td>@blockMetaData.GetContentTypeName()</td></tr>
-        <tr><th>Block Index:</th><td>@blockMetaData.Index</td></tr>
-        <tr><th>Block Content ID</th><td>@blockMetaData.ContentLink.ID</td></tr>
-        <tr><th>Block Content Guid</th><td style="text-overflow: ellipsis;overflow: hidden;white-space: nowrap;">@blockMetaData.ContentGuid</td></tr>
-        <tr><th>Layout Type:</th><td>@blockMetaData.ParentMetaData.GetContentTypeName()</td></tr>
-        <tr><th>Layout Index</th><td>@blockMetaData.ParentMetaData.Index</td></tr>
-        <tr><th>Layout Content ID</th><td>@blockMetaData.ParentMetaData.ContentLink.ID</td></tr>
-        <tr><th>Layout Content Guid</th><td style="text-overflow: ellipsis;overflow: hidden;white-space: nowrap;">@blockMetaData.ParentMetaData.ContentGuid</td></tr>
+        <tr><th>Block Type:</th><td>@blockMetadata.GetContentTypeName()</td></tr>
+        <tr><th>Block Index:</th><td>@blockMetadata.Index</td></tr>
+        <tr><th>Block Content ID</th><td>@blockMetadata.ContentLink.ID</td></tr>
+        <tr><th>Block Content Guid</th><td>@blockMetadata.ContentGuid</td></tr>
+        <tr><th>Layout Type:</th><td>@blockMetadata.ParentMetadata.GetContentTypeName()</td></tr>
+        <tr><th>Layout Index</th><td>@blockMetadata.ParentMetadata.Index</td></tr>
+        <tr><th>Layout Content ID</th><td>@blockMetadata.ParentMetadata.ContentLink.ID</td></tr>
+        <tr><th>Layout Content Guid</th><td>@blockMetadata.ParentMetadata.ContentGuid</td></tr>
     </table>
 </div>
 <style>
@@ -33,6 +33,12 @@
     font-size:0.8em;
     table-layout:fixed;
     width: 100%;
+}
+
+#@uniqueId table td {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 #@uniqueId input:not(:checked) + table {

@@ -22,16 +22,16 @@ namespace RenderingLayoutProcessor.Extension
             }
         }
 
-        public static BlockRenderingMetaData BlockMetaData(this IHtmlHelper instance)
+        public static BlockRenderingMetadata BlockMetadata(this IHtmlHelper instance)
         {
-            var blockMetaData = instance.ViewData[RenderingMetadataKeys.Block] as BlockRenderingMetaData ?? null;
-            var layoutMetaData = instance.ViewData[RenderingMetadataKeys.Layout] as BlockRenderingMetaData ?? null;
-            blockMetaData.ParentMetaData = layoutMetaData ?? new BlockRenderingMetaData();
+            var blockMetadata = instance.ViewData[RenderingMetadataKeys.Block] as BlockRenderingMetadata ?? null;
+            var layoutMetadata = instance.ViewData[RenderingMetadataKeys.Layout] as BlockRenderingMetadata ?? null;
+            blockMetadata.ParentMetadata = layoutMetadata ?? new BlockRenderingMetadata();
 
-            return blockMetaData;
+            return blockMetadata;
         }
 
-        public static string GetContentTypeName(this BlockRenderingMetaData instance, IContentLoader contentLoader = null, IContentTypeRepository contentTypeRepository = null)
+        public static string GetContentTypeName(this BlockRenderingMetadata instance, IContentLoader contentLoader = null, IContentTypeRepository contentTypeRepository = null)
         {
             if (ContentReference.IsNullOrEmpty(instance.ContentLink))
             {
@@ -47,7 +47,7 @@ namespace RenderingLayoutProcessor.Extension
             return contentType.Name;
         }
 
-        public static Dictionary<string, string> BlockMetaDataDictionary(this BlockRenderingMetaData instance, bool allKeys = false)
+        public static Dictionary<string, string> BlockMetadataDictionary(this BlockRenderingMetadata instance, bool allKeys = false)
         {
             var dictionary = new Dictionary<string, string>();
             if (instance is null)

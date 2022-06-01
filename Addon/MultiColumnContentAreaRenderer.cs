@@ -67,22 +67,22 @@ namespace RenderingLayoutProcessor
             {
                 var content = _contentAreaLoader.Get(current);
 
-                htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Block] = new BlockRenderingMetaData()
+                htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Block] = new BlockRenderingMetadata()
                 {
                     ContentLink = current.ContentLink,
                     ContentGuid = current.ContentGuid,
                     Tag = GetContentAreaItemTemplateTag(htmlHelper, current),
-                    Index = (int?)(htmlHelper?.ViewContext?.ViewData[RenderingMetadataKeys.Block] as BlockRenderingMetaData)?.Index + 1 ?? 0
+                    Index = (int?)(htmlHelper?.ViewContext?.ViewData[RenderingMetadataKeys.Block] as BlockRenderingMetadata)?.Index + 1 ?? 0
                 };
 
                 if (content is IRenderingLayoutBlock asLayoutBlock)
                 {
                     var newContext = asLayoutBlock.NewContext();
-                    htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Layout] = new BlockRenderingMetaData() {
+                    htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Layout] = new BlockRenderingMetadata() {
                         ContentLink = current.ContentLink,
                         ContentGuid = current.ContentGuid,
                         Tag = GetContentAreaItemTemplateTag(htmlHelper, current),
-                        Index = (int?)(htmlHelper?.ViewContext?.ViewData[RenderingMetadataKeys.Layout] as BlockRenderingMetaData)?.Index + 1 ?? 0
+                        Index = (int?)(htmlHelper?.ViewContext?.ViewData[RenderingMetadataKeys.Layout] as BlockRenderingMetadata)?.Index + 1 ?? 0
                     };
 
                     while (currentContext is not DefaultContentAreaContext && !newContext.CanNestUnder(currentContext))
@@ -101,7 +101,7 @@ namespace RenderingLayoutProcessor
                     newContext.ParentContext = currentContext;
                     newContext.ContainerOpen(htmlHelper);
                     // Reset the index when opening a new container. Otherwise we don't count the index per layout
-                    (htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Block] as BlockRenderingMetaData).Index = -1;
+                    (htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Block] as BlockRenderingMetadata).Index = -1;
 
                     RenderContentAreaItem(
                         htmlHelper,

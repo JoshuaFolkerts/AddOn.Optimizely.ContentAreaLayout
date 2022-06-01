@@ -30,9 +30,9 @@ namespace RenderingLayoutProcessor.Context
             {
                 rowTag.AddCssClass(rowClass);
             }
-            var blockMetaData = htmlHelper.BlockMetaData();
-            rowTag.MergeAttribute("data-layout", blockMetaData.ParentMetaData.ContentLink.ID.ToString());
-            rowTag.MergeAttribute("data-layout-index", blockMetaData.ParentMetaData.Index.ToString());
+            var blockMetadata = htmlHelper.BlockMetadata();
+            rowTag.MergeAttribute("data-layout", blockMetadata.ParentMetadata.ContentLink.ID.ToString());
+            rowTag.MergeAttribute("data-layout-index", blockMetadata.ParentMetadata.Index.ToString());
             rowTag.RenderOpenTo(htmlHelper);
         }
 
