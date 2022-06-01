@@ -19,9 +19,20 @@ namespace Site.Controllers
     {
         public ViewResult Index(StandardPage currentPage)
         {
-            return currentPage.CssFramework == CssFramework.Bootstrap
-                ? View($"~/Views/StandardPage/Bootstrap.cshtml", currentPage)
-                : View($"~/Views/StandardPage/Foundation.cshtml", currentPage);
+            switch (currentPage.CssFramework)
+            {
+                case CssFramework.Bootstrap:
+                    return View($"~/Views/StandardPage/Bootstrap.cshtml", currentPage);
+                    break;
+                case CssFramework.Foundation:
+                    return View($"~/Views/StandardPage/Foundation.cshtml", currentPage);
+                    break;
+                case CssFramework.NoFramework:
+                default:
+                    return View($"~/Views/StandardPage/NoFramework.cshtml", currentPage);
+                    break;
+
+            }
         }
     }
 }

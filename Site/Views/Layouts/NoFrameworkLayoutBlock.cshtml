@@ -1,0 +1,12 @@
+@model Site.Models.MultiCol.NoFrameworkLayoutBlock
+@inject IContextModeResolver ContextModeResolver
+
+@if (ContextModeResolver.CurrentMode == ContextMode.Edit)
+{
+    <div style="padding: 3px 6px 6px;">
+        <div style="font-size: 12px">@(((IContent)Model).Name)</div>
+        <div>
+            <hr style="margin: 3px 0; border-color: #000; background-color: #000;"/>
+        </div>
+    </div>
+}

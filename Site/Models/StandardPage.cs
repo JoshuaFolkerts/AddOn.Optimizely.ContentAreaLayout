@@ -34,6 +34,7 @@ namespace Site.Models
     public enum CssFramework
     {
         Bootstrap,
-        Foundation
+        Foundation,
+        NoFramework
     }
 }
