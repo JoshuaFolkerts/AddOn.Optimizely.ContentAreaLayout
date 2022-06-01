@@ -1,6 +1,5 @@
 ﻿using EPiServer.Core;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using RenderingLayoutProcessor.Models;
 using RenderingLayoutProcessor.Context;
 using System;
@@ -8,6 +7,9 @@ using System.Collections.Generic;
 using EPiServer.ServiceLocation;
 using EPiServer.DataAbstraction;
 using EPiServer;
+using System.Linq;
+using RenderingLayoutProcessor.Attributes;
+using System.Reflection;
 
 namespace RenderingLayoutProcessor.Extension
 {
@@ -31,14 +33,55 @@ namespace RenderingLayoutProcessor.Extension
             return blockMetadata;
         }
 
-        public static string GetContentTypeName(this BlockRenderingMetadata instance, IContentLoader contentLoader = null, IContentTypeRepository contentTypeRepository = null)
+        public static Dictionary<string, string> GetRenderAttributes(this ContentData instance)
+        {
+            var attributes = new Dictionary<string, string>();
+            
+            var renderAttributeProperties = instance.GetType().GetProperties().Where(prop => Attribute.IsDefined(prop, typeof(RenderAttribute)));
+            var contentType = instance.GetType();
+            foreach (var attributeProp in renderAttributeProperties)
+            {
+                var propertyName = attributeProp.Name.Trim().ToLower();
+                
+                var propertyValue = instance.GetPropertyValue(attributeProp.Name, string.Empty);
+
+                if (propertyValue == "True" || propertyValue == "False")
+                {
+                    propertyValue = propertyValue.ToLowerInvariant();
+                }
+
+                var renderAttribute = contentType.GetProperty(attributeProp.Name).GetCustomAttribute<RenderAttribute>();
+                if (string.IsNullOrEmpty(propertyValue) && !renderAttribute.RenderIfEmpty)
+                {
+                    continue;
+                }
+
+                var attributeName = renderAttribute.AttributeName ?? String.Format("data-{0}", propertyName);
+
+                attributes.Add(attributeName, propertyValue);
+            }
+
+            return attributes;
+        }
+
+        public static T GetContent<T>(this BlockRenderingMetadata instance, IContentLoader contentLoader = null) where T : IContentData
         {
             if (ContentReference.IsNullOrEmpty(instance.ContentLink))
             {
-                return null;
+                return default(T);
             }
             contentLoader ??= ServiceLocator.Current.GetInstance<IContentLoader>();
-            if (!contentLoader.TryGet<IContent>(instance.ContentLink, out IContent content))
+            if (!contentLoader.TryGet<T>(instance.ContentLink, out T content))
+            {
+                return default(T);
+            }
+            return content;
+        }
+
+        public static string GetContentTypeName(this BlockRenderingMetadata instance, IContentTypeRepository contentTypeRepository = null)
+        {
+            var content = instance.GetContent<IContent>();
+            if (content is null)
             {
                 return null;
             }
@@ -46,7 +89,6 @@ namespace RenderingLayoutProcessor.Extension
             var contentType = contentTypeRepository.Load(content.ContentTypeID);
             return contentType.Name;
         }
-
         public static Dictionary<string, string> BlockMetadataDictionary(this BlockRenderingMetadata instance, bool allKeys = false)
         {
             var dictionary = new Dictionary<string, string>();

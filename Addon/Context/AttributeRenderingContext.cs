@@ -31,8 +31,25 @@ namespace RenderingLayoutProcessor.Context
                 rowTag.AddCssClass(rowClass);
             }
             var blockMetadata = htmlHelper.BlockMetadata();
+            if (blockMetadata is null)
+            {
+                rowTag.RenderOpenTo(htmlHelper);
+                return;
+            }
+
             rowTag.MergeAttribute("data-layout", blockMetadata.ParentMetadata.ContentLink.ID.ToString());
             rowTag.MergeAttribute("data-layout-index", blockMetadata.ParentMetadata.Index.ToString());
+
+            var block = blockMetadata.GetContent<ContentData>();
+            if (block != null)
+            {
+                var attributes = block.GetRenderAttributes();
+                foreach(var attribute in attributes)
+                {
+                    rowTag.MergeAttribute(attribute.Key, attribute.Value);
+                }
+            }
+
             rowTag.RenderOpenTo(htmlHelper);
         }
 
