@@ -1,8 +1,8 @@
 ﻿using EPiServer.DataAnnotations;
-using RenderingLayoutProcessor;
-using RenderingLayoutProcessor.Block;
-using RenderingLayoutProcessor.Context;
-using RenderingLayoutProcessor.Attributes;
+using AddOn.Optimizely.ContentAreaLayout;
+using AddOn.Optimizely.ContentAreaLayout.Block;
+using AddOn.Optimizely.ContentAreaLayout.Context;
+using AddOn.Optimizely.ContentAreaLayout.Attributes;
 using System.ComponentModel.DataAnnotations;
 
 namespace Site.Models.MultiCol

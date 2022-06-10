@@ -2,7 +2,7 @@
 using EPiServer.Core;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace RenderingLayoutProcessor.Context
+namespace AddOn.Optimizely.ContentAreaLayout.Context
 {
     public class DefaultContentAreaContext : IRenderingContentAreaContext
     {

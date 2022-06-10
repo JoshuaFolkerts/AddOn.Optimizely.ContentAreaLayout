@@ -17,30 +17,30 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
 using Moq;
-using RenderingLayoutProcessor;
-using RenderingLayoutProcessor.Context;
+using AddOn.Optimizely.ContentAreaLayout;
+using AddOn.Optimizely.ContentAreaLayout.Context;
 
 namespace Tests
 {
     public abstract class TestBase
     {
         private int _containerIdSource = 1;
-        
+
         protected Mock<TestRenderingContentAreaContext> SetupRenderingContext(bool canContain, bool canNestUnder, RenderingProcessorAction action = RenderingProcessorAction.Continue)
         {
             return SetupRenderingContext<TestRenderingContentAreaContext>(_ => canContain, _ => canNestUnder, action);
         }
-        
+
         protected Mock<TestRenderingContentAreaContext> SetupRenderingContext(Func<IRenderingContentAreaContext, bool> canContain, Func<IRenderingContentAreaContext, bool> canNestUnder, RenderingProcessorAction action = RenderingProcessorAction.Continue)
         {
             return SetupRenderingContext<TestRenderingContentAreaContext>(canContain, canNestUnder, action);
         }
-        
+
         protected Mock<T> SetupRenderingContext<T>(bool canContain, bool canNestUnder, RenderingProcessorAction action = RenderingProcessorAction.Continue) where T : class, IRenderingContentAreaContext
         {
             return SetupRenderingContext<T>(_ => canContain, _ => canNestUnder, action);
         }
-        
+
         protected Mock<T> SetupRenderingContext<T>(Func<IRenderingContentAreaContext, bool> canContain, Func<IRenderingContentAreaContext, bool> canNestUnder, RenderingProcessorAction action = RenderingProcessorAction.Continue) where T : class, IRenderingContentAreaContext
         {
             var context = new Mock<T>(_containerIdSource++, action) { CallBase = true };
@@ -49,7 +49,7 @@ namespace Tests
 
             return context;
         }
-        
+
         protected (MultiColumnContentAreaRenderer, List<ContentAreaItem>, IHtmlHelper, StringWriter) SetupRenderer(IEnumerable<IContent>? contentItems = null, IDictionary<string, string>? attributes = null)
         {
             var contentRenderer = new Mock<IContentRenderer>();
@@ -69,29 +69,29 @@ namespace Tests
             httpContext.Setup(x => x.Items)
                 .Returns(new Dictionary<object, object?>
                 {
-                    {"Epi:ContentRenderingContext", new ContentRenderingContext(null)}, 
+                    {"Epi:ContentRenderingContext", new ContentRenderingContext(null)},
                     {"Epi:ContentAreaStack", null}
                 });
-            
-            var viewContext = new ViewContext {HttpContext = httpContext.Object, Writer = writer, RouteData = new RouteData()};
-            
+
+            var viewContext = new ViewContext { HttpContext = httpContext.Object, Writer = writer, RouteData = new RouteData() };
+
             htmlHelper.Setup(x => x.ViewContext).Returns(viewContext);
             htmlHelper.Setup(x => x.ViewData).Returns(viewContext.ViewData);
             htmlHelper.Setup(x => x.ViewBag).Returns(new ExpandoObject());
 
             templateResolver.Setup(x =>
-                    x.ResolveAll( It.IsAny<object>(), It.IsAny<Type>(), It.IsAny<TemplateTypeCategories>(), It.IsAny<IEnumerable<string>>()))
-                .Returns(new List<TemplateModel> {new Mock<TemplateModel>().Object});
+                    x.ResolveAll(It.IsAny<object>(), It.IsAny<Type>(), It.IsAny<TemplateTypeCategories>(), It.IsAny<IEnumerable<string>>()))
+                .Returns(new List<TemplateModel> { new Mock<TemplateModel>().Object });
 
             var contentAreaItems = new List<Mock<ContentAreaItem>>();
-            foreach (var content in contentItems ?? new List<IContent> {new BasicContent {ContentLink = new ContentReference(100)}})
+            foreach (var content in contentItems ?? new List<IContent> { new BasicContent { ContentLink = new ContentReference(100) } })
             {
                 var contentAreaItem = new Mock<ContentAreaItem>();
                 contentAreaLoader.Setup(x => x.Get(contentAreaItem.Object))
                     .Returns(content);
                 contentAreaItems.Add(contentAreaItem);
             }
-            
+
             contentAreaLoader.Setup(x => x.LoadDisplayOption(It.IsAny<ContentAreaItem>()))
                 .Returns((DisplayOption)null!);
 
@@ -103,7 +103,7 @@ namespace Tests
 
             modelTemplateTagResolver.Setup(x => x.Resolve(It.IsAny<ModelExplorer>(), It.IsAny<ViewContext>()))
                 .Returns(new List<string>());
-            
+
             var renderer = new MultiColumnContentAreaRenderer(
                 contentRenderer.Object,
                 templateResolver.Object,

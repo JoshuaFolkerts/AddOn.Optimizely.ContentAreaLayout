@@ -3,7 +3,7 @@ using EPiServer.Core;
 using EPiServer.DataAbstraction;
 using EPiServer.DataAnnotations;
 using EPiServer.Shell.ObjectEditing;
-using RenderingLayoutProcessor.EditorDescriptor;
+using AddOn.Optimizely.ContentAreaLayout.EditorDescriptor;
 
 namespace Site.Models
 {
@@ -24,7 +24,7 @@ namespace Site.Models
             GroupName = SystemTabNames.Content,
             Order = 320)]
         public virtual ContentArea MainContentArea { get; set; }
-        
+
         [Display(Name = "Css Framework", GroupName = SystemTabNames.Settings, Order = 10)]
         [SelectOne(SelectionFactoryType = typeof(EnumSelectionFactory<CssFramework>))]
         [BackingType(typeof(PropertyNumber))]
@@ -34,7 +34,9 @@ namespace Site.Models
     public enum CssFramework
     {
         Bootstrap,
+
         Foundation,
+
         NoFramework
     }
 }

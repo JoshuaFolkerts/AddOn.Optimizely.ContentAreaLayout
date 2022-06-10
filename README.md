@@ -1,4 +1,4 @@
-RenderingLayoutProcessor is an extention to Episerver/Optimizely that makes it possible to add layout blocks that will control how the next x blocks will be displayed.
+AddOn.Optimizely.ContentAreaLayout is an extention to Episerver/Optimizely that makes it possible to add layout blocks that will control how the next x blocks will be displayed.
 
 
 ## Usage

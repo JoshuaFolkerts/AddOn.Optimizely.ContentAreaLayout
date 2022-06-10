@@ -1,11 +1,13 @@
 ﻿using System;
 
-namespace RenderingLayoutProcessor.Attributes
+namespace AddOn.Optimizely.ContentAreaLayout.Attributes
 {
     public class PropertyToHtmlAttributeAttribute : Attribute
     {
         private string attributeName;
+
         private bool renderIfEmpty = false;
+
         public PropertyToHtmlAttributeAttribute(string attributeName = null, bool renderIfEmpty = false)
         {
             this.attributeName = attributeName;

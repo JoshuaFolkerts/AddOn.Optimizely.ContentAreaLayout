@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using EPiServer.Core;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using RenderingLayoutProcessor.Extension;
+using AddOn.Optimizely.ContentAreaLayout.Extension;
 
-namespace RenderingLayoutProcessor.Context
+namespace AddOn.Optimizely.ContentAreaLayout.Context
 {
     public abstract class GridRenderingContext : IRenderingContentAreaContext
     {

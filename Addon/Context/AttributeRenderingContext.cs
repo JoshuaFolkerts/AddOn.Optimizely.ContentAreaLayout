@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using EPiServer.Core;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using RenderingLayoutProcessor.Extension;
+using AddOn.Optimizely.ContentAreaLayout.Extension;
 
-namespace RenderingLayoutProcessor.Context
+namespace AddOn.Optimizely.ContentAreaLayout.Context
 {
     public class AttributeRenderingContext : IRenderingContentAreaContext
     {
@@ -44,7 +44,7 @@ namespace RenderingLayoutProcessor.Context
             if (block != null)
             {
                 var attributes = block.GetRenderAttributes();
-                foreach(var attribute in attributes)
+                foreach (var attribute in attributes)
                 {
                     rowTag.MergeAttribute(attribute.Key, attribute.Value);
                 }

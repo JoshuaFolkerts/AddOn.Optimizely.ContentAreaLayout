@@ -10,11 +10,11 @@ using EPiServer.Web.Mvc;
 using EPiServer.Web.Mvc.Html;
 using EPiServer.Web.Templating;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using RenderingLayoutProcessor.Context;
-using RenderingLayoutProcessor.Extension;
-using RenderingLayoutProcessor.Models;
+using AddOn.Optimizely.ContentAreaLayout.Context;
+using AddOn.Optimizely.ContentAreaLayout.Extension;
+using AddOn.Optimizely.ContentAreaLayout.Models;
 
-namespace RenderingLayoutProcessor
+namespace AddOn.Optimizely.ContentAreaLayout
 {
     /// <summary>
     ///     Extends the default <see cref="ContentAreaRenderer" /> to apply custom CSS classes to each
@@ -23,11 +23,17 @@ namespace RenderingLayoutProcessor
     public class MultiColumnContentAreaRenderer : ContentAreaRenderer
     {
         private readonly IContentRenderer _contentRenderer;
+
         private readonly IContentAreaLoader _contentAreaLoader;
+
         private readonly IContentAreaItemAttributeAssembler _attributeAssembler;
+
         private readonly ContentAreaRenderingOptions _contentAreaRenderingOptions;
+
         private readonly IModelTemplateTagResolver _modelTagResolver;
+
         private readonly ModelExplorerFactory _modelExplorerFactory;
+
         private bool? _isMethodsOverriden;
 
         public MultiColumnContentAreaRenderer()
@@ -78,7 +84,8 @@ namespace RenderingLayoutProcessor
                 if (content is IRenderingLayoutBlock asLayoutBlock)
                 {
                     var newContext = asLayoutBlock.NewContext();
-                    htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Layout] = new BlockRenderingMetadata() {
+                    htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Layout] = new BlockRenderingMetadata()
+                    {
                         ContentLink = current.ContentLink,
                         ContentGuid = current.ContentGuid,
                         Tag = GetContentAreaItemTemplateTag(htmlHelper, current),
@@ -88,7 +95,7 @@ namespace RenderingLayoutProcessor
                     while (currentContext is not DefaultContentAreaContext && !newContext.CanNestUnder(currentContext))
                     {
                         currentContext.ContainerClose(htmlHelper);
-                        
+
                         currentContext = currentContext.ParentContext;
                     }
 
@@ -129,12 +136,12 @@ namespace RenderingLayoutProcessor
                     });
 
                 currentContext.ItemClose(htmlHelper);
-                
+
                 while (contextResult == RenderingProcessorAction.Close && currentContext is not DefaultContentAreaContext)
                 {
                     currentContext.ContainerClose(htmlHelper);
                     currentContext = currentContext.ParentContext;
-                    contextResult = currentContext.RenderItem(htmlHelper, null,  () => { });
+                    contextResult = currentContext.RenderItem(htmlHelper, null, () => { });
                 }
             }
 
@@ -176,11 +183,11 @@ namespace RenderingLayoutProcessor
                 //if partner has overriden our methods we run with partner code instead of default
                 var contentAreaTag = GetContentAreaTemplateTag(htmlHelper);
                 tags = string.IsNullOrWhiteSpace(templateTag)
-                    ? new[] {contentAreaTag}
+                    ? new[] { contentAreaTag }
                     : _contentAreaRenderingOptions.TemplateTagSelectionStrategy ==
                     MissingTemplateTagSelectionStrategy.NoTag || string.IsNullOrEmpty(contentAreaTag)
-                        ? new[] {templateTag}
-                        : new[] {templateTag, contentAreaTag};
+                        ? new[] { templateTag }
+                        : new[] { templateTag, contentAreaTag };
             }
             else
             {
@@ -215,7 +222,6 @@ namespace RenderingLayoutProcessor
                     tagBuilder.RenderOpenTo(htmlHelper);
                 }
 
-
                 // Render the content
                 htmlHelper.RenderContentData(content, true, templateModel, _contentRenderer);
 
@@ -231,9 +237,9 @@ namespace RenderingLayoutProcessor
             // Default behavior returns true by default if the hascontainer is not specified.
             // Overriding to return false if not specified
             // This only effects the div surrounding the entire content area, not individual items
-            var hasContainer = (bool?) htmlHelper.ViewContext?.ViewData["hascontainer"];
-            var htmlTag = (string) htmlHelper.ViewContext?.ViewData["customtag"];
-            var cssClass = (string) htmlHelper.ViewContext?.ViewData["cssclass"];
+            var hasContainer = (bool?)htmlHelper.ViewContext?.ViewData["hascontainer"];
+            var htmlTag = (string)htmlHelper.ViewContext?.ViewData["customtag"];
+            var cssClass = (string)htmlHelper.ViewContext?.ViewData["cssclass"];
 
             return hasContainer.HasValue && hasContainer.Value
                    || htmlTag != null && htmlTag != "div"
@@ -265,11 +271,11 @@ namespace RenderingLayoutProcessor
                 {
                     var isTemplateTagOverriden =
                         GetType().GetMethod(nameof(GetContentAreaTemplateTag),
-                                BindingFlags.Instance | BindingFlags.NonPublic, null, new[] {typeof(IHtmlHelper)}, null)
+                                BindingFlags.Instance | BindingFlags.NonPublic, null, new[] { typeof(IHtmlHelper) }, null)
                             ?.DeclaringType != typeof(ContentAreaRenderer);
                     var isItemTemplateTagOverriden = GetType().GetMethod(nameof(GetContentAreaItemTemplateTag),
                                                          BindingFlags.Instance | BindingFlags.NonPublic, null,
-                                                         new[] {typeof(IHtmlHelper), typeof(ContentAreaItem)}, null)
+                                                         new[] { typeof(IHtmlHelper), typeof(ContentAreaItem) }, null)
                                                          ?.DeclaringType !=
                                                      typeof(ContentAreaRenderer);
                     _isMethodsOverriden = isTemplateTagOverriden || isItemTemplateTagOverriden;

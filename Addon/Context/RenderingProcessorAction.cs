@@ -1,4 +1,4 @@
-﻿namespace RenderingLayoutProcessor.Context
+﻿namespace AddOn.Optimizely.ContentAreaLayout.Context
 {
     public enum RenderingProcessorAction
     {

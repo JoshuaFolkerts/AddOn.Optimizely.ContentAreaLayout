@@ -1,17 +1,17 @@
 ﻿using EPiServer.Core;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using RenderingLayoutProcessor.Models;
-using RenderingLayoutProcessor.Context;
+using AddOn.Optimizely.ContentAreaLayout.Models;
+using AddOn.Optimizely.ContentAreaLayout.Context;
 using System;
 using System.Collections.Generic;
 using EPiServer.ServiceLocation;
 using EPiServer.DataAbstraction;
 using EPiServer;
 using System.Linq;
-using RenderingLayoutProcessor.Attributes;
+using AddOn.Optimizely.ContentAreaLayout.Attributes;
 using System.Reflection;
 
-namespace RenderingLayoutProcessor.Extension
+namespace AddOn.Optimizely.ContentAreaLayout.Extension
 {
     public static class ContentAreaContextExtensions
     {
@@ -36,13 +36,13 @@ namespace RenderingLayoutProcessor.Extension
         public static Dictionary<string, string> GetRenderAttributes(this ContentData instance)
         {
             var attributes = new Dictionary<string, string>();
-            
+
             var renderAttributeProperties = instance.GetType().GetProperties().Where(prop => Attribute.IsDefined(prop, typeof(PropertyToHtmlAttributeAttribute)));
             var contentType = instance.GetType();
             foreach (var attributeProp in renderAttributeProperties)
             {
                 var propertyName = attributeProp.Name.Trim().ToLower();
-                
+
                 var propertyValue = instance.GetPropertyValue(attributeProp.Name, string.Empty);
 
                 if (propertyValue == "True" || propertyValue == "False")
@@ -89,6 +89,7 @@ namespace RenderingLayoutProcessor.Extension
             var contentType = contentTypeRepository.Load(content.ContentTypeID);
             return contentType.Name;
         }
+
         public static Dictionary<string, string> BlockMetadataDictionary(this BlockRenderingMetadata instance, bool allKeys = false)
         {
             var dictionary = new Dictionary<string, string>();

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using EPiServer.Framework.Localization;
 
-namespace RenderingLayoutProcessor.EditorDescriptor
+namespace AddOn.Optimizely.ContentAreaLayout.EditorDescriptor
 {
     public static class EnumLocalization
     {
