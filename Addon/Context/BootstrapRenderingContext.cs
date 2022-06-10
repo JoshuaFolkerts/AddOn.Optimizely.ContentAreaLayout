@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace RenderingLayoutProcessor.Context
+namespace AddOn.Optimizely.ContentAreaLayout.Context
 {
     public class BootstrapRenderingContext : GridRenderingContext
     {

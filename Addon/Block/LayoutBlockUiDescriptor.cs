@@ -1,6 +1,6 @@
 ﻿using EPiServer.Shell;
 
-namespace RenderingLayoutProcessor.Block
+namespace AddOn.Optimizely.ContentAreaLayout.Block
 {
     [UIDescriptorRegistration]
     public class LayoutBlockUiDescriptor : UIDescriptor<IRenderingLayoutBlock>

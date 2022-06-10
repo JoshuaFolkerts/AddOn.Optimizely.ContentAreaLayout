@@ -1,7 +1,7 @@
 ﻿using EPiServer.DataAnnotations;
-using RenderingLayoutProcessor.Context;
+using AddOn.Optimizely.ContentAreaLayout.Context;
 
-namespace RenderingLayoutProcessor.Block
+namespace AddOn.Optimizely.ContentAreaLayout.Block
 {
     [ContentType(DisplayName = "Clear Rendering Layout", GroupName = "Layout", GUID = "b15b4a5b-2f99-47ae-aceb-c666eabaafd2", Description = "Clears multicolumn layout.")]
     public class ClearRenderingBlock : RenderingLayoutBlock

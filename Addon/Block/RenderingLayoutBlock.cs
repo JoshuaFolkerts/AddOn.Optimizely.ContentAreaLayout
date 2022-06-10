@@ -1,6 +1,6 @@
 ﻿using EPiServer.Core;
 
-namespace RenderingLayoutProcessor.Block
+namespace AddOn.Optimizely.ContentAreaLayout.Block
 {
     public abstract class RenderingLayoutBlock : BlockData, IRenderingLayoutBlock
     {

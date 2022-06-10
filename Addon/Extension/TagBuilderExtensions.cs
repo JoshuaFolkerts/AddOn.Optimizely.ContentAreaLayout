@@ -2,7 +2,7 @@
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace RenderingLayoutProcessor.Extension
+namespace AddOn.Optimizely.ContentAreaLayout.Extension
 {
     public static class TagBuilderExtensions
     {

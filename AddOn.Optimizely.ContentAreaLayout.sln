@@ -1,13 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31313.79
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32526.322
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RenderingLayoutProcessor", "Addon/RenderingLayoutProcessor.csproj", "{8E6D3B77-258C-4209-94FD-46D9E4D7400C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AddOn.Optimizely.ContentAreaLayout", "Addon\AddOn.Optimizely.ContentAreaLayout.csproj", "{8E6D3B77-258C-4209-94FD-46D9E4D7400C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Site", "Site\Site.csproj", "{7E25419C-4010-487D-A09B-4C9CFE8A86E5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Site", "Site\Site.csproj", "{7E25419C-4010-487D-A09B-4C9CFE8A86E5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{FFA3120A-8993-4253-B20B-1E91A5AEFA65}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj", "{FFA3120A-8993-4253-B20B-1E91A5AEFA65}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{8E8370D4-8FF7-4560-914A-926E66DF5B56}"
 	ProjectSection(SolutionItems) = preProject

@@ -1,4 +1,4 @@
-﻿namespace RenderingLayoutProcessor
+﻿namespace AddOn.Optimizely.ContentAreaLayout
 {
     public interface IRenderingLayoutBlock
     {

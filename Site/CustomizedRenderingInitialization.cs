@@ -5,7 +5,7 @@ using EPiServer.Web;
 using EPiServer.Web.Mvc;
 using EPiServer.Web.Mvc.Html;
 using Microsoft.Extensions.DependencyInjection;
-using RenderingLayoutProcessor;
+using AddOn.Optimizely.ContentAreaLayout;
 
 namespace Site
 {
@@ -24,8 +24,10 @@ namespace Site
                     .AddTransient<ContentAreaRenderer, MultiColumnContentAreaRenderer>();
         }
 
-        public void Initialize(InitializationEngine context) { }
+        public void Initialize(InitializationEngine context)
+        { }
 
-        public void Uninitialize(InitializationEngine context) { }
+        public void Uninitialize(InitializationEngine context)
+        { }
     }
 }

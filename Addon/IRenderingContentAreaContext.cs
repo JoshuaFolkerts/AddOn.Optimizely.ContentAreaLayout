@@ -1,9 +1,9 @@
 ﻿using System;
 using EPiServer.Core;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using RenderingLayoutProcessor.Context;
+using AddOn.Optimizely.ContentAreaLayout.Context;
 
-namespace RenderingLayoutProcessor
+namespace AddOn.Optimizely.ContentAreaLayout
 {
     public interface IRenderingContentAreaContext
     {

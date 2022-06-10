@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using EPiServer.Shell.ObjectEditing;
 
-namespace RenderingLayoutProcessor.EditorDescriptor
+namespace AddOn.Optimizely.ContentAreaLayout.EditorDescriptor
 {
     public class EnumSelectionFactory<TEnum> : ISelectionFactory
     {
