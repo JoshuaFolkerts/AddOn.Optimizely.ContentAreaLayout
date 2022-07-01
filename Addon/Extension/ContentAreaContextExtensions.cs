@@ -107,5 +107,16 @@ namespace AddOn.Optimizely.ContentAreaLayout.Extension
             }
             return dictionary;
         }
+
+        public static string UniqueBlockId(this BlockRenderingMetadata blockMetadata, string prefix = "", string postfix = "")
+        {
+            return $"{prefix}-{blockMetadata.ContentLink.ID}-{blockMetadata.Index}-{blockMetadata.ParentMetadata.Index}{postfix}";
+        }
+        public static string UniqueBlockId(this BlockRenderingMetadata blockMetadata, BlockData block, string prefix = "", string postfix = "")
+        {
+            prefix = block.GetType().Name.ToLowerInvariant().Replace("proxy", "") + prefix;
+
+            return blockMetadata.UniqueBlockId(prefix, postfix);
+        }
     }
 }
