@@ -1,4 +1,4 @@
-﻿using EPiServer.Core;
+using EPiServer.Core;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using AddOn.Optimizely.ContentAreaLayout.Models;
 using AddOn.Optimizely.ContentAreaLayout.Context;
@@ -26,8 +26,8 @@ namespace AddOn.Optimizely.ContentAreaLayout.Extension
 
         public static BlockRenderingMetadata BlockMetadata(this IHtmlHelper instance)
         {
-            var blockMetadata = instance.ViewData[RenderingMetadataKeys.Block] as BlockRenderingMetadata ?? null;
-            var layoutMetadata = instance.ViewData[RenderingMetadataKeys.Layout] as BlockRenderingMetadata ?? null;
+            var blockMetadata = instance.ViewData[RenderingMetadataKeys.Block] as BlockRenderingMetadata ?? new BlockRenderingMetadata();
+            var layoutMetadata = instance.ViewData[RenderingMetadataKeys.Layout] as BlockRenderingMetadata ?? new BlockRenderingMetadata();
             blockMetadata.ParentMetadata = layoutMetadata ?? new BlockRenderingMetadata();
 
             return blockMetadata;
