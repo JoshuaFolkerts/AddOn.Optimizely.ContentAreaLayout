@@ -19,21 +19,14 @@ namespace AddOn.Optimizely.ContentAreaLayout.Context
 
         protected int _columnsRendered;
 
-        protected bool _enableContainerWrapper;
-
         public GridRenderingContext(int[] itemSizes = null)
         {
             _itemSizes = itemSizes ?? new[] { 2, 4, 6 };
             _numberOfColumns = _itemSizes.Sum();
         }
 
-        public void ContainerOpen(IHtmlHelper htmlHelper)
+        public virtual void ContainerOpen(IHtmlHelper htmlHelper)
         {
-            if (_enableContainerWrapper)
-            {
-                ProcessContainer(htmlHelper);
-            }
-
             var rowTag = new TagBuilder("div");
 
             foreach (var rowClass in GetRowClasses())
@@ -44,19 +37,7 @@ namespace AddOn.Optimizely.ContentAreaLayout.Context
             rowTag.RenderOpenTo(htmlHelper);
         }
 
-        private void ProcessContainer(IHtmlHelper htmlHelper)
-        {
-            var containerTag = new TagBuilder("div");
-
-            foreach (var containerClass in GetContainerClasses())
-            {
-                containerTag.AddCssClass(containerClass);
-            }
-
-            containerTag.RenderOpenTo(htmlHelper);
-        }
-
-        public void ItemOpen(IHtmlHelper htmlHelper)
+        public virtual void ItemOpen(IHtmlHelper htmlHelper)
         {
             var colTag = new TagBuilder("div");
             foreach (var columnClass in GetColumnClasses())
@@ -85,22 +66,12 @@ namespace AddOn.Optimizely.ContentAreaLayout.Context
                 RenderingProcessorAction.Continue;
         }
 
-        public void ItemClose(IHtmlHelper htmlHelper)
+        public virtual void ItemClose(IHtmlHelper htmlHelper)
         {
             new TagBuilder("div").RenderCloseTo(htmlHelper);
         }
 
-        public void ContainerClose(IHtmlHelper htmlHelper)
-        {
-            new TagBuilder("div").RenderCloseTo(htmlHelper);
-
-            if (_enableContainerWrapper)
-            {
-                ProcessCloseContainer(htmlHelper);
-            }
-        }
-
-        private void ProcessCloseContainer(IHtmlHelper htmlHelper)
+        public virtual void ContainerClose(IHtmlHelper htmlHelper)
         {
             new TagBuilder("div").RenderCloseTo(htmlHelper);
         }
