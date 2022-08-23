@@ -10,7 +10,7 @@ namespace Site.Controllers
     /// </summary>
     /// <remarks>
     /// Note that as the view file name is hard coded it won't work with DisplayModes (ie Index.mobile.cshtml).
-    /// For page types requiring such views add specific controllers for them. Alternatively the Index action 
+    /// For page types requiring such views add specific controllers for them. Alternatively the Index action
     /// could be modified to set ControllerContext.RouteData.Values["controller"] to type name of the currentPage
     /// argument. That may however have side effects.
     /// </remarks>
@@ -19,20 +19,12 @@ namespace Site.Controllers
     {
         public ViewResult Index(StandardPage currentPage)
         {
-            switch (currentPage.CssFramework)
+            return currentPage.CssFramework switch
             {
-                case CssFramework.Bootstrap:
-                    return View($"~/Views/StandardPage/Bootstrap.cshtml", currentPage);
-                    break;
-                case CssFramework.Foundation:
-                    return View($"~/Views/StandardPage/Foundation.cshtml", currentPage);
-                    break;
-                case CssFramework.NoFramework:
-                default:
-                    return View($"~/Views/StandardPage/NoFramework.cshtml", currentPage);
-                    break;
-
-            }
+                CssFramework.Bootstrap => View($"~/Views/StandardPage/Bootstrap.cshtml", currentPage),
+                CssFramework.Foundation => View($"~/Views/StandardPage/Foundation.cshtml", currentPage),
+                _ => View($"~/Views/StandardPage/NoFramework.cshtml", currentPage),
+            };
         }
     }
 }
