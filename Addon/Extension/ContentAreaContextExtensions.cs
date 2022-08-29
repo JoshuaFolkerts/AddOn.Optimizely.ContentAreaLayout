@@ -36,27 +36,32 @@ namespace AddOn.Optimizely.ContentAreaLayout.Extension
         public static Dictionary<string, string> GetRenderAttributes(this ContentData instance)
         {
             var attributes = new Dictionary<string, string>();
-
-            var renderAttributeProperties = instance.GetType().GetProperties().Where(prop => Attribute.IsDefined(prop, typeof(PropertyToHtmlAttributeAttribute)));
+            if (instance is null)
+            {
+                return attributes;
+            }
+            
+            var renderAttributeProperties = instance.GetType().GetProperties().Where((prop) => Attribute.IsDefined(prop, typeof(PropertyToHtmlAttributeAttribute)));
             var contentType = instance.GetType();
             foreach (var attributeProp in renderAttributeProperties)
             {
                 var propertyName = attributeProp.Name.Trim().ToLower();
-
                 var propertyValue = instance.GetPropertyValue(attributeProp.Name, string.Empty);
-
-                if (propertyValue == "True" || propertyValue == "False")
+                
+                if (attributeProp.PropertyType == typeof(bool))
                 {
-                    propertyValue = propertyValue.ToLowerInvariant();
+                    propertyValue = (attributeProp.GetValue(instance) as bool? ?? false).ToString().ToLowerInvariant();
                 }
 
-                var renderAttribute = contentType.GetProperty(attributeProp.Name).GetCustomAttribute<PropertyToHtmlAttributeAttribute>();
-                if (string.IsNullOrEmpty(propertyValue) && !renderAttribute.RenderIfEmpty)
+                var prop = contentType.GetProperty(attributeProp.Name);
+                var renderAttribute = prop?.GetCustomAttribute<PropertyToHtmlAttributeAttribute>();
+                
+                if (string.IsNullOrEmpty(propertyValue) && renderAttribute?.RenderIfEmpty == false)
                 {
                     continue;
                 }
 
-                var attributeName = renderAttribute.AttributeName ?? String.Format("data-{0}", propertyName);
+                var attributeName = renderAttribute?.AttributeName ?? String.Format("data-{0}", propertyName);
 
                 attributes.Add(attributeName, propertyValue);
             }
