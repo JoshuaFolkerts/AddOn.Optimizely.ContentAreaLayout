@@ -14,5 +14,7 @@ namespace AddOn.Optimizely.ContentAreaLayout.Models
         public string Tag { get; set; } = string.Empty;
 
         public BlockRenderingMetadata ParentMetadata { get; set; }
+        
+        public int Children { get; set; }
     }
 }

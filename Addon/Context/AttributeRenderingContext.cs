@@ -39,6 +39,7 @@ namespace AddOn.Optimizely.ContentAreaLayout.Context
 
             rowTag.MergeAttribute("data-layout", blockMetadata.ParentMetadata.ContentLink.ID.ToString());
             rowTag.MergeAttribute("data-layout-index", blockMetadata.ParentMetadata.Index.ToString());
+            rowTag.MergeAttribute("data-layout-children", blockMetadata.ParentMetadata.Children.ToString());
 
             var block = blockMetadata.GetContent<ContentData>();
             if (block != null)

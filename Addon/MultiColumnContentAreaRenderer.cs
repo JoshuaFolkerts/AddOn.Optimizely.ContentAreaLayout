@@ -69,16 +69,20 @@ namespace AddOn.Optimizely.ContentAreaLayout
             IEnumerable<ContentAreaItem> contentAreaItems)
         {
             IRenderingContentAreaContext currentContext = DefaultContentAreaContext.Instance;
-            foreach (var current in contentAreaItems)
+            var itemsProjected = contentAreaItems.ToArray();
+            var contentItems = itemsProjected.Select(x => _contentAreaLoader.Get(x)).ToArray();
+
+            for (var i = 0; i < itemsProjected.Length; i++)
             {
-                var content = _contentAreaLoader.Get(current);
+                var current = itemsProjected[i];
+                var content = contentItems[i];
 
                 htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Block] = new BlockRenderingMetadata()
                 {
                     ContentLink = current.ContentLink,
                     ContentGuid = current.ContentGuid,
                     Tag = GetContentAreaItemTemplateTag(htmlHelper, current),
-                    Index = (int?)(htmlHelper?.ViewContext?.ViewData[RenderingMetadataKeys.Block] as BlockRenderingMetadata)?.Index + 1 ?? 0
+                    Index = (htmlHelper?.ViewContext?.ViewData[RenderingMetadataKeys.Block] as BlockRenderingMetadata)?.Index + 1 ?? 0,
                 };
 
                 if (content is IRenderingLayoutBlock asLayoutBlock)
@@ -89,7 +93,8 @@ namespace AddOn.Optimizely.ContentAreaLayout
                         ContentLink = current.ContentLink,
                         ContentGuid = current.ContentGuid,
                         Tag = GetContentAreaItemTemplateTag(htmlHelper, current),
-                        Index = (int?)(htmlHelper?.ViewContext?.ViewData[RenderingMetadataKeys.Layout] as BlockRenderingMetadata)?.Index + 1 ?? 0
+                        Index = (htmlHelper?.ViewContext?.ViewData[RenderingMetadataKeys.Layout] as BlockRenderingMetadata)?.Index + 1 ?? 0,
+                        Children = contentItems.Skip(i + 1).TakeWhile(c => c is not IRenderingLayoutBlock).Count()
                     };
 
                     while (currentContext is not DefaultContentAreaContext && !newContext.CanNestUnder(currentContext))
