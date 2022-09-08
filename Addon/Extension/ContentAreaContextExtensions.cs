@@ -10,6 +10,7 @@ using EPiServer;
 using System.Linq;
 using AddOn.Optimizely.ContentAreaLayout.Attributes;
 using System.Reflection;
+using Castle.Core.Internal;
 
 namespace AddOn.Optimizely.ContentAreaLayout.Extension
 {
@@ -32,6 +33,60 @@ namespace AddOn.Optimizely.ContentAreaLayout.Extension
 
             return blockMetadata;
         }
+        public static Dictionary<string, string> GetBlockMetadataProperties(this IContent instance)
+        {
+            var properties = new Dictionary<string, string>();
+            if (instance is null || !(instance is ContentData content))
+            {
+                return properties;
+            }
+            var sourceProperties = content.GetPropertyAttributes<BlockRenderingMetadataAttributeAttribute>();
+            if (!sourceProperties?.Any() ?? false)
+            {
+                return properties;
+            }
+
+            foreach (var property in sourceProperties)
+            {
+                var contentType = content.GetType();
+                var prop = contentType.GetProperty(property.Key);
+                var propertyAttribute = prop?.GetCustomAttribute<BlockRenderingMetadataAttributeAttribute>();
+                if (!string.IsNullOrEmpty(propertyAttribute?.Name))
+                {
+                    properties.Add(propertyAttribute.Name, property.Value);
+                }
+                else
+                {
+                    properties.Add(property.Key, property.Value);
+                }
+            }
+            return properties;
+        }
+
+        public static Dictionary<string, string> GetPropertyAttributes<T>(this ContentData instance) where T : System.Attribute
+        {
+            var attributes = new Dictionary<string, string>();
+            if (instance is null)
+            {
+                return attributes;
+            }
+
+            var renderAttributeProperties = instance.GetType().GetProperties().Where((prop) => System.Attribute.IsDefined(prop, typeof(T)));
+            var contentType = instance.GetType();
+            foreach (var attributeProp in renderAttributeProperties)
+            {
+
+                var propertyValue = instance.GetPropertyValue(attributeProp.Name, string.Empty);
+
+                if (attributeProp.PropertyType == typeof(bool))
+                {
+                    propertyValue = (attributeProp.GetValue(instance) as bool? ?? false).ToString().ToLowerInvariant();
+                }
+                attributes.Add(attributeProp.Name, propertyValue);
+            }
+
+            return attributes;
+        }
 
         public static Dictionary<string, string> GetRenderAttributes(this ContentData instance)
         {
@@ -40,30 +95,26 @@ namespace AddOn.Optimizely.ContentAreaLayout.Extension
             {
                 return attributes;
             }
-            
-            var renderAttributeProperties = instance.GetType().GetProperties().Where((prop) => Attribute.IsDefined(prop, typeof(PropertyToHtmlAttributeAttribute)));
-            var contentType = instance.GetType();
-            foreach (var attributeProp in renderAttributeProperties)
+            var sourceAttributes = instance.GetPropertyAttributes<PropertyToHtmlAttributeAttribute>();
+            foreach (var attribute in sourceAttributes)
             {
-                var propertyName = attributeProp.Name.Trim().ToLower();
-                var propertyValue = instance.GetPropertyValue(attributeProp.Name, string.Empty);
-                
-                if (attributeProp.PropertyType == typeof(bool))
-                {
-                    propertyValue = (attributeProp.GetValue(instance) as bool? ?? false).ToString().ToLowerInvariant();
-                }
-
-                var prop = contentType.GetProperty(attributeProp.Name);
+                var contentType = instance.GetType();
+                var prop = contentType.GetProperty(attribute.Key);
                 var renderAttribute = prop?.GetCustomAttribute<PropertyToHtmlAttributeAttribute>();
-                
-                if (string.IsNullOrEmpty(propertyValue) && renderAttribute?.RenderIfEmpty == false)
+
+                if (string.IsNullOrEmpty(attribute.Value) && renderAttribute?.RenderIfEmpty != false)
                 {
                     continue;
                 }
-
-                var attributeName = renderAttribute?.AttributeName ?? String.Format("data-{0}", propertyName);
-
-                attributes.Add(attributeName, propertyValue);
+                // This overrides the original dictionary item with it's custom name
+                if (!string.IsNullOrEmpty(renderAttribute?.AttributeName))
+                {
+                    attributes.Add(renderAttribute.AttributeName, attribute.Value);
+                }
+                else
+                {
+                    attributes.Add(attribute.Key, attribute.Value);
+                }
             }
 
             return attributes;

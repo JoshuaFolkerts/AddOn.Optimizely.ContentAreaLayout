@@ -1,5 +1,6 @@
 ﻿using EPiServer.Core;
 using System;
+using System.Collections.Generic;
 
 namespace AddOn.Optimizely.ContentAreaLayout.Models
 {
@@ -14,7 +15,8 @@ namespace AddOn.Optimizely.ContentAreaLayout.Models
         public string Tag { get; set; } = string.Empty;
 
         public BlockRenderingMetadata ParentMetadata { get; set; }
-        
+
         public int Children { get; set; }
+        public Dictionary<string, string> Properties { get; set; } = new Dictionary<string, string>();
     }
 }
