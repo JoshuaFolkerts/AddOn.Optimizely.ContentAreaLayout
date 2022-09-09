@@ -42,7 +42,7 @@ namespace AddOn.Optimizely.ContentAreaLayout.Context
             rowTag.MergeAttribute("data-layout-children", blockMetadata.ParentMetadata.Children.ToString());
             foreach (var property in blockMetadata.ParentMetadata.Properties)
             {
-                rowTag.MergeAttribute("data-layout-" + property.Key, property.Value);
+                rowTag.MergeAttribute(property.Key, property.Value);
             }
 
             var block = blockMetadata.GetContent<ContentData>();
