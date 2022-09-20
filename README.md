@@ -4,10 +4,17 @@ AddOn.Optimizely.ContentAreaLayout is an extention to Episerver/Optimizely that 
 ## Usage
 
 
-1. Register the MultiColumnContentAreaRenderer in Startup.cs
+1. Register the ContentAreaLayoutRenderer in Startup.cs
 
 ```cs
-services.AddTransient<ContentAreaRenderer, MultiColumnContentAreaRenderer>();
+services.AddTransient<ContentAreaRenderer, ContentAreaLayoutRenderer>();
+```
+
+If one wishes to have a fallback behaviour when the content area does not contain any layout blocks this can also be registered during startup by adding a generic type pointing top a class that implements **IRenderingContentAreaFallbackContext**
+
+
+```cs
+services.AddTransient<ContentAreaRenderer, ContentAreaLayoutRenderer<MyFallbackContext>>();
 ```
 
 2. Create a layout block inheriting from RenderingLayoutBlock with properties that describes how the grids containers should render. This needs to implement the **IRenderingLayoutBlock** interface, the easiest way by inheriting from the **RenderingLayoutBlock** base class.
@@ -23,7 +30,7 @@ services.AddTransient<ContentAreaRenderer, MultiColumnContentAreaRenderer>();
 ```
 This example will render a grid with 2 columns, 8 columns and 2 columns, by having this reading from a property of the block you can easily add control over grid sizes, padding colors etc.
 
-3. Choose or tweak/implement a RenderingContext. This class i what controls how the grid will be rendered.
+3. Choose or tweak/implement a RenderingContext. This class is what controls how the layout will be rendered.
 
 Using the **BootstrapRenderingContext** class will do the heavy lifting of adding the grid classes to the content area blocks and containers. If this does not suit your needs you can create your own context class either inheriting from **GridRenderingContext** or straight from **IRenderingContentAreaContext**.
 

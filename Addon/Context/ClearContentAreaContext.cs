@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AddOn.Optimizely.ContentAreaLayout.Models;
+using System;
 using EPiServer.Core;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -20,6 +21,10 @@ namespace AddOn.Optimizely.ContentAreaLayout.Context
 
         public bool CanNestUnder(IRenderingContentAreaContext parentContext) => parentContext is DefaultContentAreaContext;
 
+        public void ContainerOpen(IHtmlHelper htmlHelper, BlockRenderingMetadata blockMetadata)
+        {
+        }
+        
         public void ContainerClose(IHtmlHelper htmlHelper)
         {
         }
@@ -27,16 +32,14 @@ namespace AddOn.Optimizely.ContentAreaLayout.Context
         public RenderingProcessorAction RenderItem(IHtmlHelper htmlHelper, ContentAreaItem current, Action renderItem) =>
             RenderingProcessorAction.Close;
 
+        
+        public void ItemOpen(IHtmlHelper htmlHelper, BlockRenderingMetadata blockMetadata)
+        {
+        }
+        
         public void ItemClose(IHtmlHelper htmlHelper)
         {
         }
-
-        public void ItemOpen(IHtmlHelper htmlHelper)
-        {
-        }
-
-        public void ContainerOpen(IHtmlHelper htmlHelper)
-        {
-        }
+        
     }
 }

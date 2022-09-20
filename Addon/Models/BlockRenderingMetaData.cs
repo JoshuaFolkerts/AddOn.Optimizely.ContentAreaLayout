@@ -1,10 +1,13 @@
 ﻿using EPiServer.Core;
 using System;
+using System.Collections.Generic;
 
 namespace AddOn.Optimizely.ContentAreaLayout.Models
 {
     public class BlockRenderingMetadata
     {
+        public static readonly BlockRenderingMetadata Empty = new BlockRenderingMetadata();
+        
         public int Index { get; set; } = -1;
 
         public Guid ContentGuid { get; set; } = Guid.Empty;
@@ -14,7 +17,8 @@ namespace AddOn.Optimizely.ContentAreaLayout.Models
         public string Tag { get; set; } = string.Empty;
 
         public BlockRenderingMetadata ParentMetadata { get; set; }
-        
+
         public int Children { get; set; }
+        public Dictionary<string, string> Properties { get; set; } = new Dictionary<string, string>();
     }
 }

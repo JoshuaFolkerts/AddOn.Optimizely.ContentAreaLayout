@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Tests
 {
-    public class MultiColumnContentAreaRendererTests : TestBase
+    public class ContentAreaLayoutRendererTests : TestBase
     {
         private const Mock<TestRenderingContentAreaContext> ContentContext = (Mock<TestRenderingContentAreaContext>)null;
 
@@ -20,7 +20,7 @@ namespace Tests
 
             renderer.RenderContentAreaItemsInternal(htmlHelper, contentAreaItems);
 
-            Assert.Equal(@"<div attr1=""attr1_value""></div>", writer.ToString());
+            Assert.Equal(@"<div attr1=""attr1_value""><i></i></div>", writer.ToString());
         }
 
         [Fact]
@@ -125,6 +125,22 @@ namespace Tests
             renderer.RenderContentAreaItemsInternal(htmlHelper, contentAreaItems);
 
             Assert.Equal("<c_1><iw_1><i></i></iw_1></c_1><c_2><iw_2><i></i></iw_2></c_2>", writer.ToString());
+        }
+        
+        [Fact]
+        public void ShouldUseFallbackIfSetAndNoLayoutsInArea()
+        {
+            var (renderer, contentAreaItems, htmlHelper, writer) = SetupRenderer<TestRenderingContentAreaFallbackRenderingAreaContext>(
+            new List<IContent>
+                {
+                    new BasicContent { ContentLink = new ContentReference(1)},
+                    new BasicContent { ContentLink = new ContentReference(2)}
+                }
+            );
+
+            renderer.RenderContentAreaItemsInternal(htmlHelper, contentAreaItems);
+
+            Assert.Equal("<fb><i></i><i></i></fb>", writer.ToString());
         }
     }
 }

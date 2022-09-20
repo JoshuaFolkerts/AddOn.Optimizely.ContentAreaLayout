@@ -16,31 +16,32 @@ using AddOn.Optimizely.ContentAreaLayout.Models;
 
 namespace AddOn.Optimizely.ContentAreaLayout
 {
+    public class ContentAreaLayoutRenderer : ContentAreaLayoutRenderer<DefaultContentAreaContext>
+    {
+        public ContentAreaLayoutRenderer(IContentRenderer contentRenderer, ITemplateResolver templateResolver, IContentAreaItemAttributeAssembler attributeAssembler, IContentRepository contentRepository, IContentAreaLoader contentAreaLoader, IContextModeResolver contextModeResolver, ContentAreaRenderingOptions contentAreaRenderingOptions, ModelExplorerFactory modelExplorerFactory, IModelTemplateTagResolver modelTemplateTagResolver)
+            : base(contentRenderer, templateResolver, attributeAssembler, contentRepository, contentAreaLoader, contextModeResolver, contentAreaRenderingOptions, modelExplorerFactory, modelTemplateTagResolver)
+        {
+        }
+    }
+    
     /// <summary>
     ///     Extends the default <see cref="ContentAreaRenderer" /> to apply custom CSS classes to each
     ///     <see cref="ContentFragment" />.
     /// </summary>
-    public class MultiColumnContentAreaRenderer : ContentAreaRenderer
+    public class ContentAreaLayoutRenderer<TFallbackContext> : ContentAreaRenderer where TFallbackContext : class, IRenderingContentAreaFallbackContext, new()
     {
         private readonly IContentRenderer _contentRenderer;
-
         private readonly IContentAreaLoader _contentAreaLoader;
-
         private readonly IContentAreaItemAttributeAssembler _attributeAssembler;
-
         private readonly ContentAreaRenderingOptions _contentAreaRenderingOptions;
-
         private readonly IModelTemplateTagResolver _modelTagResolver;
-
         private readonly ModelExplorerFactory _modelExplorerFactory;
+        private readonly IRenderingContentAreaContext _defaultContext = new DefaultContentAreaContext();
+        private TFallbackContext _fallbackContext = null;
 
         private bool? _isMethodsOverriden;
 
-        public MultiColumnContentAreaRenderer()
-        {
-        }
-
-        public MultiColumnContentAreaRenderer(IContentRenderer contentRenderer, ITemplateResolver templateResolver,
+        public ContentAreaLayoutRenderer(IContentRenderer contentRenderer, ITemplateResolver templateResolver,
             IContentAreaItemAttributeAssembler attributeAssembler,
             IContentRepository contentRepository, IContentAreaLoader contentAreaLoader,
             IContextModeResolver contextModeResolver,
@@ -65,55 +66,84 @@ namespace AddOn.Optimizely.ContentAreaLayout
             RenderContentAreaItems(htmlHelper, contentAreaItems);
         }
 
+        protected virtual void BeforeRenderingContentAreaItems(IHtmlHelper htmlHelper, IList<ContentAreaItem> contentAreaItems, IList<IContent> contentItems)
+        {
+            if (typeof(TFallbackContext) == typeof(DefaultContentAreaContext) || contentItems.Any(x => x is IRenderingLayoutBlock))
+                return;
+
+            _fallbackContext = new TFallbackContext();
+            _fallbackContext.ContainerOpen(htmlHelper, new BlockRenderingMetadata
+            {
+                ParentMetadata = new BlockRenderingMetadata
+                {
+                    Index = 0,
+                    Children = contentItems.Count,
+                }
+            });
+        }
+        
+        protected virtual void AfterRenderingContentAreaItems(IHtmlHelper htmlHelper, IList<ContentAreaItem> contentAreaItems, IList<IContent> contentItems)
+        {
+            _fallbackContext?.ContainerClose(htmlHelper);
+        }
+
         protected override void RenderContentAreaItems(IHtmlHelper htmlHelper,
             IEnumerable<ContentAreaItem> contentAreaItems)
         {
-            IRenderingContentAreaContext currentContext = DefaultContentAreaContext.Instance;
+            contentAreaItems = contentAreaItems.ToList();
+            IRenderingContentAreaContext currentContext = _defaultContext;
+            BlockRenderingMetadata blockMetadata = null;
+            BlockRenderingMetadata layoutMetadata = null;
             var itemsProjected = contentAreaItems.ToArray();
             var contentItems = itemsProjected.Select(x => _contentAreaLoader.Get(x)).ToArray();
 
+            BeforeRenderingContentAreaItems(htmlHelper, contentAreaItems.ToList(), contentItems);
+            
             for (var i = 0; i < itemsProjected.Length; i++)
             {
                 var current = itemsProjected[i];
                 var content = contentItems[i];
 
-                htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Block] = new BlockRenderingMetadata()
+                blockMetadata = new BlockRenderingMetadata
                 {
                     ContentLink = current.ContentLink,
                     ContentGuid = current.ContentGuid,
                     Tag = GetContentAreaItemTemplateTag(htmlHelper, current),
-                    Index = (htmlHelper?.ViewContext?.ViewData[RenderingMetadataKeys.Block] as BlockRenderingMetadata)?.Index + 1 ?? 0,
+                    Index = blockMetadata?.Index + 1 ?? 0
                 };
-
+                
                 if (content is IRenderingLayoutBlock asLayoutBlock)
                 {
                     var newContext = asLayoutBlock.NewContext();
-                    htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Layout] = new BlockRenderingMetadata()
+                    
+                    layoutMetadata = new BlockRenderingMetadata
                     {
                         ContentLink = current.ContentLink,
                         ContentGuid = current.ContentGuid,
                         Tag = GetContentAreaItemTemplateTag(htmlHelper, current),
-                        Index = (htmlHelper?.ViewContext?.ViewData[RenderingMetadataKeys.Layout] as BlockRenderingMetadata)?.Index + 1 ?? 0,
-                        Children = contentItems.Skip(i + 1).TakeWhile(c => c is not IRenderingLayoutBlock).Count()
+                        Index = layoutMetadata?.Index + 1 ?? 0,
+                        Children = contentItems.Skip(i + 1).TakeWhile(c => c is not IRenderingLayoutBlock).Count(),
+                        Properties = content.GetBlockMetadataProperties()
                     };
 
-                    while (currentContext is not DefaultContentAreaContext && !newContext.CanNestUnder(currentContext))
+                    blockMetadata.ParentMetadata = layoutMetadata;
+
+                    while (currentContext != _defaultContext && !newContext.CanNestUnder(currentContext))
                     {
                         currentContext.ContainerClose(htmlHelper);
-
                         currentContext = currentContext.ParentContext;
                     }
 
-                    while (currentContext is not DefaultContentAreaContext && !currentContext.CanContain(newContext))
+                    while (currentContext != _defaultContext && !currentContext.CanContain(newContext))
                     {
                         currentContext.ContainerClose(htmlHelper);
                         currentContext = currentContext.ParentContext;
                     }
 
                     newContext.ParentContext = currentContext;
-                    newContext.ContainerOpen(htmlHelper);
+                    newContext.ContainerOpen(htmlHelper, blockMetadata);
                     // Reset the index when opening a new container. Otherwise we don't count the index per layout
-                    (htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Block] as BlockRenderingMetadata).Index = -1;
+                    blockMetadata.Index = -1;
 
                     RenderContentAreaItem(
                         htmlHelper,
@@ -127,7 +157,7 @@ namespace AddOn.Optimizely.ContentAreaLayout
                     continue;
                 }
 
-                currentContext.ItemOpen(htmlHelper);
+                currentContext.ItemOpen(htmlHelper, blockMetadata);
 
                 var contextResult = currentContext.RenderItem(htmlHelper, current,
                     () =>
@@ -142,7 +172,7 @@ namespace AddOn.Optimizely.ContentAreaLayout
 
                 currentContext.ItemClose(htmlHelper);
 
-                while (contextResult == RenderingProcessorAction.Close && currentContext is not DefaultContentAreaContext)
+                while (contextResult == RenderingProcessorAction.Close && currentContext != _defaultContext)
                 {
                     currentContext.ContainerClose(htmlHelper);
                     currentContext = currentContext.ParentContext;
@@ -155,6 +185,8 @@ namespace AddOn.Optimizely.ContentAreaLayout
                 currentContext.ContainerClose(htmlHelper);
                 currentContext = currentContext.ParentContext;
             }
+
+            AfterRenderingContentAreaItems(htmlHelper, contentAreaItems.ToList(), contentItems);
         }
 
         protected override void RenderContentAreaItem(IHtmlHelper htmlHelper, ContentAreaItem contentAreaItem,
@@ -226,14 +258,11 @@ namespace AddOn.Optimizely.ContentAreaLayout
 
                     tagBuilder.RenderOpenTo(htmlHelper);
                 }
-
+                
                 // Render the content
                 htmlHelper.RenderContentData(content, true, templateModel, _contentRenderer);
 
-                if (tagBuilder is not null)
-                {
-                    tagBuilder.RenderCloseTo(htmlHelper);
-                }
+                tagBuilder?.RenderCloseTo(htmlHelper);
             }
         }
 
