@@ -10,6 +10,13 @@ AddOn.Optimizely.ContentAreaLayout is an extention to Episerver/Optimizely that 
 services.AddTransient<ContentAreaRenderer, ContentAreaLayoutRenderer>();
 ```
 
+If one wishes to have a fallback behaviour when the content area does not contain any layout blocks this can also be registered during startup by adding a generic type pointing top a class that implements **IRenderingContentAreaFallbackContext**
+
+
+```cs
+services.AddTransient<ContentAreaRenderer, ContentAreaLayoutRenderer<MyFallbackContext>>();
+```
+
 2. Create a layout block inheriting from RenderingLayoutBlock with properties that describes how the grids containers should render. This needs to implement the **IRenderingLayoutBlock** interface, the easiest way by inheriting from the **RenderingLayoutBlock** base class.
 
  In it's simplest form this could be:
