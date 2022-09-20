@@ -4,6 +4,7 @@ using System.Linq;
 using EPiServer.Core;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using AddOn.Optimizely.ContentAreaLayout.Extension;
+using AddOn.Optimizely.ContentAreaLayout.Models;
 
 namespace AddOn.Optimizely.ContentAreaLayout.Context
 {
@@ -25,7 +26,7 @@ namespace AddOn.Optimizely.ContentAreaLayout.Context
             _numberOfColumns = _itemSizes.Sum();
         }
 
-        public virtual void ContainerOpen(IHtmlHelper htmlHelper)
+        public virtual void ContainerOpen(IHtmlHelper htmlHelper, BlockRenderingMetadata blockMetadata)
         {
             var rowTag = new TagBuilder("div");
 
@@ -37,7 +38,7 @@ namespace AddOn.Optimizely.ContentAreaLayout.Context
             rowTag.RenderOpenTo(htmlHelper);
         }
 
-        public virtual void ItemOpen(IHtmlHelper htmlHelper)
+        public virtual void ItemOpen(IHtmlHelper htmlHelper, BlockRenderingMetadata blockMetadata)
         {
             var colTag = new TagBuilder("div");
             foreach (var columnClass in GetColumnClasses())

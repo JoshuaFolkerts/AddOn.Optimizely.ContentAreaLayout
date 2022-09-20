@@ -6,6 +6,7 @@ using EPiServer.Web.Mvc;
 using EPiServer.Web.Mvc.Html;
 using Microsoft.Extensions.DependencyInjection;
 using AddOn.Optimizely.ContentAreaLayout;
+using AddOn.Optimizely.ContentAreaLayout.Context;
 
 namespace Site
 {
@@ -21,8 +22,7 @@ namespace Site
             context.ConfigurationComplete += (o, e) =>
                 // Register custom implementations that should be used in favour of the default implementations
                 context.Services
-                    .AddTransient<ContentAreaRenderer, MultiColumnContentAreaRenderer>();
-        }
+                    .AddTransient<ContentAreaRenderer, ContentAreaLayoutRenderer<AttributeRenderingContentAreaFallbackContext>>();    }
 
         public void Initialize(InitializationEngine context)
         { }

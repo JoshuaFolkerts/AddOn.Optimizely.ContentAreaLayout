@@ -1,4 +1,5 @@
 @using AddOn.Optimizely.ContentAreaLayout.Extension;
+@using AddOn.Optimizely.ContentAreaLayout.Models
 @model DummyBlock
 @{
     var blockMetadata = Html.BlockMetadata();
@@ -6,9 +7,11 @@
 }
 <div id="@uniqueId" @Html.Raw(blockMetadata.BlockMetadataDictionary().ToAttributes())>
     <strong>Dummy block</strong><br/>
+    
+    @if(blockMetadata != BlockRenderingMetadata.Empty) {
     <label for="@(uniqueId + "-checkbox")" role="button">Toggle metadata</label>
     <input type="checkbox" id="@(uniqueId + "-checkbox")" hidden/>
-    
+        
     <table class="table-debug" style="" cellpadding="3">
         <tr><th>Block Type:</th><td>@blockMetadata.GetContentTypeName()</td></tr>
         <tr><th>Block Index:</th><td>@blockMetadata.Index</td></tr>
@@ -19,6 +22,7 @@
         <tr><th>Layout Content ID</th><td>@blockMetadata.ParentMetadata.ContentLink.ID</td></tr>
         <tr><th>Layout Content Guid</th><td>@blockMetadata.ParentMetadata.ContentGuid</td></tr>
     </table>
+    }
 </div>
 <style>
 #@uniqueId {

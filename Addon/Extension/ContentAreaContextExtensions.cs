@@ -10,7 +10,6 @@ using EPiServer;
 using System.Linq;
 using AddOn.Optimizely.ContentAreaLayout.Attributes;
 using System.Reflection;
-using Castle.Core.Internal;
 
 namespace AddOn.Optimizely.ContentAreaLayout.Extension
 {
@@ -27,12 +26,13 @@ namespace AddOn.Optimizely.ContentAreaLayout.Extension
 
         public static BlockRenderingMetadata BlockMetadata(this IHtmlHelper instance)
         {
-            var blockMetadata = instance.ViewData[RenderingMetadataKeys.Block] as BlockRenderingMetadata ?? new BlockRenderingMetadata();
-            var layoutMetadata = instance.ViewData[RenderingMetadataKeys.Layout] as BlockRenderingMetadata ?? new BlockRenderingMetadata();
-            blockMetadata.ParentMetadata = layoutMetadata ?? new BlockRenderingMetadata();
+            var blockMetadata = instance.ViewData[RenderingMetadataKeys.Block] as BlockRenderingMetadata ?? BlockRenderingMetadata.Empty;
+            var layoutMetadata = instance.ViewData[RenderingMetadataKeys.Layout] as BlockRenderingMetadata ?? BlockRenderingMetadata.Empty;
+            blockMetadata.ParentMetadata = layoutMetadata;
 
             return blockMetadata;
         }
+        
         public static Dictionary<string, string> GetBlockMetadataProperties(this IContent instance)
         {
             var properties = new Dictionary<string, string>();
@@ -72,10 +72,9 @@ namespace AddOn.Optimizely.ContentAreaLayout.Extension
             }
 
             var renderAttributeProperties = instance.GetType().GetProperties().Where((prop) => System.Attribute.IsDefined(prop, typeof(T)));
-            var contentType = instance.GetType();
+
             foreach (var attributeProp in renderAttributeProperties)
             {
-
                 var propertyValue = instance.GetPropertyValue(attributeProp.Name, string.Empty);
 
                 if (attributeProp.PropertyType == typeof(bool))
@@ -168,6 +167,7 @@ namespace AddOn.Optimizely.ContentAreaLayout.Extension
         {
             return $"{prefix}-{blockMetadata.ContentLink.ID}-{blockMetadata.Index}-{blockMetadata.ParentMetadata.Index}{postfix}";
         }
+        
         public static string UniqueBlockId(this BlockRenderingMetadata blockMetadata, BlockData block, string prefix = "", string postfix = "")
         {
             prefix = block.GetType().Name.ToLowerInvariant().Replace("proxy", "") + prefix;

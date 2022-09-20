@@ -6,6 +6,8 @@ namespace AddOn.Optimizely.ContentAreaLayout.Models
 {
     public class BlockRenderingMetadata
     {
+        public static readonly BlockRenderingMetadata Empty = new BlockRenderingMetadata();
+        
         public int Index { get; set; } = -1;
 
         public Guid ContentGuid { get; set; } = Guid.Empty;

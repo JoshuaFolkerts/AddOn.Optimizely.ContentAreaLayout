@@ -19,6 +19,8 @@ using Microsoft.AspNetCore.Routing;
 using Moq;
 using AddOn.Optimizely.ContentAreaLayout;
 using AddOn.Optimizely.ContentAreaLayout.Context;
+using AddOn.Optimizely.ContentAreaLayout.Extension;
+using System.Threading.Tasks;
 
 namespace Tests
 {
@@ -50,7 +52,13 @@ namespace Tests
             return context;
         }
 
-        protected (MultiColumnContentAreaRenderer, List<ContentAreaItem>, IHtmlHelper, StringWriter) SetupRenderer(IEnumerable<IContent>? contentItems = null, IDictionary<string, string>? attributes = null)
+        protected (ContentAreaLayoutRenderer<DefaultContentAreaContext>, List<ContentAreaItem>, IHtmlHelper, StringWriter) SetupRenderer(IEnumerable<IContent>? contentItems = null,
+            IDictionary<string, string>? attributes = null)
+        {
+            return SetupRenderer<DefaultContentAreaContext>(contentItems, attributes);
+        }
+
+        protected (ContentAreaLayoutRenderer<T>, List<ContentAreaItem>, IHtmlHelper, StringWriter) SetupRenderer<T>(IEnumerable<IContent>? contentItems = null, IDictionary<string, string>? attributes = null) where T : class, IRenderingContentAreaFallbackContext, new()
         {
             var contentRenderer = new Mock<IContentRenderer>();
             var templateResolver = new Mock<ITemplateResolver>();
@@ -103,8 +111,19 @@ namespace Tests
 
             modelTemplateTagResolver.Setup(x => x.Resolve(It.IsAny<ModelExplorer>(), It.IsAny<ViewContext>()))
                 .Returns(new List<string>());
+            
+            contentRenderer.Setup(x => x.RenderAsync(It.IsAny<IHtmlHelper>(), It.IsAny<IContentData>(), It.IsAny<TemplateModel>()))
+                .Returns<IHtmlHelper, IContentData, TemplateModel>((helper, contentData, templateModel) =>
+                {
+                    if (contentData is not TestLayoutBlock)
+                    {
+                        new TagBuilder($"i").RenderTagTo(helper);
+                    }
 
-            var renderer = new MultiColumnContentAreaRenderer(
+                    return Task.CompletedTask;
+                });
+
+            var renderer = new ContentAreaLayoutRenderer<T>(
                 contentRenderer.Object,
                 templateResolver.Object,
                 contentAreaItemAttributeAssembler.Object,

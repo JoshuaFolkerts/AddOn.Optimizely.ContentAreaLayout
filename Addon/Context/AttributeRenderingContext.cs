@@ -4,6 +4,7 @@ using System.Linq;
 using EPiServer.Core;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using AddOn.Optimizely.ContentAreaLayout.Extension;
+using AddOn.Optimizely.ContentAreaLayout.Models;
 
 namespace AddOn.Optimizely.ContentAreaLayout.Context
 {
@@ -13,12 +14,11 @@ namespace AddOn.Optimizely.ContentAreaLayout.Context
 
         protected bool _enableContainerWrapper;
 
-        public AttributeRenderingContext()
+        public virtual void ContainerOpen(IHtmlHelper htmlHelper, BlockRenderingMetadata blockMetadata)
         {
-        }
-
-        public void ContainerOpen(IHtmlHelper htmlHelper)
-        {
+            htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Block] = blockMetadata;
+            htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Layout] = blockMetadata.ParentMetadata;
+            
             if (_enableContainerWrapper)
             {
                 ProcessContainer(htmlHelper);
@@ -30,13 +30,7 @@ namespace AddOn.Optimizely.ContentAreaLayout.Context
             {
                 rowTag.AddCssClass(rowClass);
             }
-            var blockMetadata = htmlHelper.BlockMetadata();
-            if (blockMetadata is null)
-            {
-                rowTag.RenderOpenTo(htmlHelper);
-                return;
-            }
-
+            
             rowTag.MergeAttribute("data-layout", blockMetadata.ParentMetadata.ContentLink.ID.ToString());
             rowTag.MergeAttribute("data-layout-index", blockMetadata.ParentMetadata.Index.ToString());
             rowTag.MergeAttribute("data-layout-children", blockMetadata.ParentMetadata.Children.ToString());
@@ -70,8 +64,9 @@ namespace AddOn.Optimizely.ContentAreaLayout.Context
             containerTag.RenderOpenTo(htmlHelper);
         }
 
-        public void ItemOpen(IHtmlHelper htmlHelper)
+        public void ItemOpen(IHtmlHelper htmlHelper, BlockRenderingMetadata blockMetadata)
         {
+            htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Block] = blockMetadata;
         }
 
         protected virtual IEnumerable<string> GetContainerClasses()
