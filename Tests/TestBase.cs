@@ -60,7 +60,6 @@ namespace Tests
 
         protected (ContentAreaLayoutRenderer<T>, List<ContentAreaItem>, IHtmlHelper, StringWriter) SetupRenderer<T>(IEnumerable<IContent>? contentItems = null, IDictionary<string, string>? attributes = null) where T : class, IRenderingContentAreaFallbackContext, new()
         {
-            var contentRenderer = new Mock<IContentRenderer>();
             var templateResolver = new Mock<ITemplateResolver>();
             var contentAreaItemAttributeAssembler = new Mock<IContentAreaItemAttributeAssembler>();
             var contentRepository = new Mock<IContentRepository>();
@@ -112,19 +111,16 @@ namespace Tests
             modelTemplateTagResolver.Setup(x => x.Resolve(It.IsAny<ModelExplorer>(), It.IsAny<ViewContext>()))
                 .Returns(new List<string>());
             
-            contentRenderer.Setup(x => x.RenderAsync(It.IsAny<IHtmlHelper>(), It.IsAny<IContentData>(), It.IsAny<TemplateModel>()))
-                .Returns<IHtmlHelper, IContentData, TemplateModel>((helper, contentData, templateModel) =>
+            void ContentRenderer(IHtmlHelper helper, IContentData contentData, TemplateModel templateModel)
+            {
+                if (contentData is not TestLayoutBlock)
                 {
-                    if (contentData is not TestLayoutBlock)
-                    {
-                        new TagBuilder($"i").RenderTagTo(helper);
-                    }
-
-                    return Task.CompletedTask;
-                });
+                    new TagBuilder("i").RenderTagTo(helper);
+                }
+            }
 
             var renderer = new ContentAreaLayoutRenderer<T>(
-                contentRenderer.Object,
+                null,
                 templateResolver.Object,
                 contentAreaItemAttributeAssembler.Object,
                 contentRepository.Object,
@@ -132,7 +128,10 @@ namespace Tests
                 contextModeResolver.Object,
                 contentAreaRenderingOptions.Object,
                 modelExplorerFactory.Object,
-                modelTemplateTagResolver.Object);
+                modelTemplateTagResolver.Object)
+            {
+                RenderContent = ContentRenderer
+            };
 
             return (renderer, contentAreaItems.Select(c => c.Object).ToList(), htmlHelper.Object, writer);
         }
