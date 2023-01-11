@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -13,6 +14,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using AddOn.Optimizely.ContentAreaLayout.Context;
 using AddOn.Optimizely.ContentAreaLayout.Extension;
 using AddOn.Optimizely.ContentAreaLayout.Models;
+using EPiServer.DataAbstraction;
 
 namespace AddOn.Optimizely.ContentAreaLayout
 {
@@ -38,8 +40,10 @@ namespace AddOn.Optimizely.ContentAreaLayout
         private readonly ModelExplorerFactory _modelExplorerFactory;
         private readonly IRenderingContentAreaContext _defaultContext = new DefaultContentAreaContext();
         private TFallbackContext _fallbackContext = null;
-
+        
         private bool? _isMethodsOverriden;
+
+        public Action<IHtmlHelper, IContent, TemplateModel> RenderContent { get; init; }
 
         public ContentAreaLayoutRenderer(IContentRenderer contentRenderer, ITemplateResolver templateResolver,
             IContentAreaItemAttributeAssembler attributeAssembler,
@@ -59,6 +63,11 @@ namespace AddOn.Optimizely.ContentAreaLayout
             _contentAreaRenderingOptions = contentAreaRenderingOptions;
             _modelExplorerFactory = modelExplorerFactory;
             _modelTagResolver = modelTemplateTagResolver;
+            
+            RenderContent = (htmlHelper, content, templateModel) =>
+            {
+                htmlHelper.RenderContentData(content, true, templateModel, _contentRenderer);
+            };
         }
 
         public void RenderContentAreaItemsInternal(IHtmlHelper htmlHelper, IEnumerable<ContentAreaItem> contentAreaItems)
@@ -194,7 +203,7 @@ namespace AddOn.Optimizely.ContentAreaLayout
         {
             var renderSettings = new Dictionary<string, object>
             {
-                [RenderSettings.ChildrenCustomTag] = htmlTag,
+                [RenderSettings.ChildrenCustomTagName] = htmlTag,
                 [RenderSettings.ChildrenCssClass] = cssClass,
                 [RenderSettings.Tag] = templateTag
             };
@@ -260,8 +269,8 @@ namespace AddOn.Optimizely.ContentAreaLayout
                 }
                 
                 // Render the content
-                htmlHelper.RenderContentData(content, true, templateModel, _contentRenderer);
-
+                RenderContent(htmlHelper, content, templateModel);
+   
                 tagBuilder?.RenderCloseTo(htmlHelper);
             }
         }
