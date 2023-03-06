@@ -35,11 +35,17 @@ namespace AddOn.Optimizely.ContentAreaLayout.Extension
         
         public static Dictionary<string, string> GetBlockMetadataProperties(this IContent instance)
         {
+            return GetBlockMetadataProperties(instance as IContentData);
+        }
+        
+        public static Dictionary<string, string> GetBlockMetadataProperties(this IContentData instance)
+        {
             var properties = new Dictionary<string, string>();
             if (instance is null || !(instance is ContentData content))
             {
                 return properties;
             }
+
             var sourceProperties = content.GetPropertyAttributes<BlockRenderingMetadataAttributeAttribute>();
             if (!sourceProperties?.Any() ?? false)
             {
