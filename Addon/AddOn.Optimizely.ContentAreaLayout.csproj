@@ -18,7 +18,7 @@
 
   <ItemGroup>
 	<PackageReference Include="EPiServer.CMS.AspNetCore.HtmlHelpers" Version="12.11.0" />
-	<PackageReference Include="EPiServer.CMS.UI.Core" Version="[12.5,13)" />
+	<PackageReference Include="EPiServer.CMS.UI.Core" Version="[12.15,13)" />
 	<FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 </Project>
