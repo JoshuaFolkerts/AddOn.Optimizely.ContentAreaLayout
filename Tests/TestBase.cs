@@ -8,8 +8,6 @@ using EPiServer.Core;
 using EPiServer.DataAbstraction;
 using EPiServer.Framework.Web;
 using EPiServer.Web;
-using EPiServer.Web.Internal;
-using EPiServer.Web.Mvc;
 using EPiServer.Web.Templating;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -20,7 +18,6 @@ using Moq;
 using AddOn.Optimizely.ContentAreaLayout;
 using AddOn.Optimizely.ContentAreaLayout.Context;
 using AddOn.Optimizely.ContentAreaLayout.Extension;
-using System.Threading.Tasks;
 
 namespace Tests
 {
@@ -67,7 +64,6 @@ namespace Tests
             var contextModeResolver = new Mock<IContextModeResolver>();
             var contentAreaRenderingOptions = new Mock<ContentAreaRenderingOptions>();
             var modelMetadataProvider = new Mock<IModelMetadataProvider>();
-            var modelExplorerFactory = new Mock<ModelExplorerFactory>(modelMetadataProvider.Object);
             var modelTemplateTagResolver = new Mock<IModelTemplateTagResolver>();
 
             var htmlHelper = new Mock<IHtmlHelper>();
@@ -94,7 +90,7 @@ namespace Tests
             foreach (var content in contentItems ?? new List<IContent> { new BasicContent { ContentLink = new ContentReference(100) } })
             {
                 var contentAreaItem = new Mock<ContentAreaItem>();
-                contentAreaLoader.Setup(x => x.Get(contentAreaItem.Object))
+                contentAreaLoader.Setup(x => x.LoadContent(contentAreaItem.Object))
                     .Returns(content);
                 contentAreaItems.Add(contentAreaItem);
             }
@@ -127,7 +123,7 @@ namespace Tests
                 contentAreaLoader.Object,
                 contextModeResolver.Object,
                 contentAreaRenderingOptions.Object,
-                modelExplorerFactory.Object,
+                modelMetadataProvider.Object,
                 modelTemplateTagResolver.Object)
             {
                 RenderContent = ContentRenderer
