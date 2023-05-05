@@ -1,15 +1,18 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using EPiServer;
 using EPiServer.Core;
 using EPiServer.Core.Html.StringParsing;
+using EPiServer.DataAbstraction;
 using EPiServer.Web;
-using EPiServer.Web.Internal;
 using EPiServer.Web.Mvc;
 using EPiServer.Web.Mvc.Html;
 using EPiServer.Web.Templating;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using AddOn.Optimizely.ContentAreaLayout.Context;
 using AddOn.Optimizely.ContentAreaLayout.Extension;
 using AddOn.Optimizely.ContentAreaLayout.Models;
@@ -18,8 +21,8 @@ namespace AddOn.Optimizely.ContentAreaLayout
 {
     public class ContentAreaLayoutRenderer : ContentAreaLayoutRenderer<DefaultContentAreaContext>
     {
-        public ContentAreaLayoutRenderer(IContentRenderer contentRenderer, ITemplateResolver templateResolver, IContentAreaItemAttributeAssembler attributeAssembler, IContentRepository contentRepository, IContentAreaLoader contentAreaLoader, IContextModeResolver contextModeResolver, ContentAreaRenderingOptions contentAreaRenderingOptions, ModelExplorerFactory modelExplorerFactory, IModelTemplateTagResolver modelTemplateTagResolver)
-            : base(contentRenderer, templateResolver, attributeAssembler, contentRepository, contentAreaLoader, contextModeResolver, contentAreaRenderingOptions, modelExplorerFactory, modelTemplateTagResolver)
+        public ContentAreaLayoutRenderer(IContentRenderer contentRenderer, ITemplateResolver templateResolver, IContentAreaItemAttributeAssembler attributeAssembler, IContentRepository contentRepository, IContentAreaLoader contentAreaLoader, IContextModeResolver contextModeResolver, ContentAreaRenderingOptions contentAreaRenderingOptions, IModelMetadataProvider modelMetadataProvider, IModelTemplateTagResolver modelTemplateTagResolver)
+            : base(contentRenderer, templateResolver, attributeAssembler, contentRepository, contentAreaLoader, contextModeResolver, contentAreaRenderingOptions, modelMetadataProvider, modelTemplateTagResolver)
         {
         }
     }
@@ -35,30 +38,38 @@ namespace AddOn.Optimizely.ContentAreaLayout
         private readonly IContentAreaItemAttributeAssembler _attributeAssembler;
         private readonly ContentAreaRenderingOptions _contentAreaRenderingOptions;
         private readonly IModelTemplateTagResolver _modelTagResolver;
-        private readonly ModelExplorerFactory _modelExplorerFactory;
+        private readonly IModelMetadataProvider _modelMetadataProvider;
         private readonly IRenderingContentAreaContext _defaultContext = new DefaultContentAreaContext();
         private TFallbackContext _fallbackContext = null;
-
+        
         private bool? _isMethodsOverriden;
+
+        public Action<IHtmlHelper, IContentData, TemplateModel> RenderContent { get; init; }
 
         public ContentAreaLayoutRenderer(IContentRenderer contentRenderer, ITemplateResolver templateResolver,
             IContentAreaItemAttributeAssembler attributeAssembler,
             IContentRepository contentRepository, IContentAreaLoader contentAreaLoader,
             IContextModeResolver contextModeResolver,
-            ContentAreaRenderingOptions contentAreaRenderingOptions, ModelExplorerFactory modelExplorerFactory,
+            ContentAreaRenderingOptions contentAreaRenderingOptions, 
+            IModelMetadataProvider modelMetadataProvider,
             IModelTemplateTagResolver modelTemplateTagResolver) :
             base(
                 contentRenderer, templateResolver, attributeAssembler,
                 contentRepository, contentAreaLoader, contextModeResolver,
-                contentAreaRenderingOptions, modelExplorerFactory, modelTemplateTagResolver
+                contentAreaRenderingOptions, modelMetadataProvider, modelTemplateTagResolver
             )
         {
             _contentRenderer = contentRenderer;
             _attributeAssembler = attributeAssembler;
             _contentAreaLoader = contentAreaLoader;
             _contentAreaRenderingOptions = contentAreaRenderingOptions;
-            _modelExplorerFactory = modelExplorerFactory;
+            _modelMetadataProvider = modelMetadataProvider;
             _modelTagResolver = modelTemplateTagResolver;
+            
+            RenderContent = (htmlHelper, content, templateModel) =>
+            {
+                htmlHelper.RenderContentData(content, true, templateModel, _contentRenderer);
+            };
         }
 
         public void RenderContentAreaItemsInternal(IHtmlHelper htmlHelper, IEnumerable<ContentAreaItem> contentAreaItems)
@@ -66,7 +77,7 @@ namespace AddOn.Optimizely.ContentAreaLayout
             RenderContentAreaItems(htmlHelper, contentAreaItems);
         }
 
-        protected virtual void BeforeRenderingContentAreaItems(IHtmlHelper htmlHelper, IList<ContentAreaItem> contentAreaItems, IList<IContent> contentItems)
+        protected virtual void BeforeRenderingContentAreaItems(IHtmlHelper htmlHelper, IList<ContentAreaItem> contentAreaItems, IList<IContentData> contentItems)
         {
             if (typeof(TFallbackContext) == typeof(DefaultContentAreaContext) || contentItems.Any(x => x is IRenderingLayoutBlock))
                 return;
@@ -82,7 +93,7 @@ namespace AddOn.Optimizely.ContentAreaLayout
             });
         }
         
-        protected virtual void AfterRenderingContentAreaItems(IHtmlHelper htmlHelper, IList<ContentAreaItem> contentAreaItems, IList<IContent> contentItems)
+        protected virtual void AfterRenderingContentAreaItems(IHtmlHelper htmlHelper, IList<ContentAreaItem> contentAreaItems, IList<IContentData> contentItems)
         {
             _fallbackContext?.ContainerClose(htmlHelper);
         }
@@ -95,7 +106,7 @@ namespace AddOn.Optimizely.ContentAreaLayout
             BlockRenderingMetadata blockMetadata = null;
             BlockRenderingMetadata layoutMetadata = null;
             var itemsProjected = contentAreaItems.ToArray();
-            var contentItems = itemsProjected.Select(x => _contentAreaLoader.Get(x)).ToArray();
+            var contentItems = itemsProjected.Select(x => _contentAreaLoader.LoadContent(x)).ToArray();
 
             BeforeRenderingContentAreaItems(htmlHelper, contentAreaItems.ToList(), contentItems);
             
@@ -194,7 +205,7 @@ namespace AddOn.Optimizely.ContentAreaLayout
         {
             var renderSettings = new Dictionary<string, object>
             {
-                [RenderSettings.ChildrenCustomTag] = htmlTag,
+                [RenderSettings.ChildrenCustomTagName] = htmlTag,
                 [RenderSettings.ChildrenCssClass] = cssClass,
                 [RenderSettings.Tag] = templateTag
             };
@@ -210,7 +221,7 @@ namespace AddOn.Optimizely.ContentAreaLayout
             // Store the render settings in the view bag.
             htmlHelper.ViewBag.RenderSettings = renderSettings;
 
-            var content = _contentAreaLoader.Get(contentAreaItem);
+            var content = _contentAreaLoader.LoadContent(contentAreaItem);
 
             if (content == null) return;
 
@@ -228,12 +239,11 @@ namespace AddOn.Optimizely.ContentAreaLayout
             }
             else
             {
-                tags = _modelTagResolver.Resolve(_modelExplorerFactory.CreateFromModel(contentAreaItem),
-                    htmlHelper.ViewContext).ToArray();
+                tags = _modelTagResolver.Resolve(CreateFromModel(contentAreaItem), htmlHelper.ViewContext).ToArray();
             }
 
             // Resolve the template for the content fragment based on the given template tag.
-            var templateModel = ResolveTemplate(htmlHelper, content, tags);
+            var templateModel = ResolveContentTemplate(htmlHelper, content, tags);
             // If there is no template and not in edit mode then don't render.
             if (templateModel == null && !IsInEditMode()) return;
 
@@ -260,10 +270,17 @@ namespace AddOn.Optimizely.ContentAreaLayout
                 }
                 
                 // Render the content
-                htmlHelper.RenderContentData(content, true, templateModel, _contentRenderer);
-
+                RenderContent(htmlHelper, content as IContent, templateModel);
+   
                 tagBuilder?.RenderCloseTo(htmlHelper);
             }
+        }
+
+        private ModelExplorer CreateFromModel(object model)
+        {
+            var metadataForType = _modelMetadataProvider.GetMetadataForType(model.GetType());
+            
+            return metadataForType is null ? null : new ModelExplorer(_modelMetadataProvider, metadataForType, model);
         }
 
         protected override bool ShouldRenderWrappingElement(IHtmlHelper htmlHelper)
@@ -282,7 +299,7 @@ namespace AddOn.Optimizely.ContentAreaLayout
 
         protected override string GetContentAreaItemCssClass(IHtmlHelper htmlHelper, ContentAreaItem contentAreaItem)
         {
-            if (_contentAreaLoader.Get(contentAreaItem) is IRenderingLayoutBlock)
+            if (_contentAreaLoader.LoadContent(contentAreaItem) is IRenderingLayoutBlock)
                 return string.Empty;
 
             var tag = GetContentAreaItemTemplateTag(htmlHelper, contentAreaItem);

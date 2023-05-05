@@ -8,8 +8,6 @@ using EPiServer.Core;
 using EPiServer.DataAbstraction;
 using EPiServer.Framework.Web;
 using EPiServer.Web;
-using EPiServer.Web.Internal;
-using EPiServer.Web.Mvc;
 using EPiServer.Web.Templating;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -20,7 +18,6 @@ using Moq;
 using AddOn.Optimizely.ContentAreaLayout;
 using AddOn.Optimizely.ContentAreaLayout.Context;
 using AddOn.Optimizely.ContentAreaLayout.Extension;
-using System.Threading.Tasks;
 
 namespace Tests
 {
@@ -60,7 +57,6 @@ namespace Tests
 
         protected (ContentAreaLayoutRenderer<T>, List<ContentAreaItem>, IHtmlHelper, StringWriter) SetupRenderer<T>(IEnumerable<IContent>? contentItems = null, IDictionary<string, string>? attributes = null) where T : class, IRenderingContentAreaFallbackContext, new()
         {
-            var contentRenderer = new Mock<IContentRenderer>();
             var templateResolver = new Mock<ITemplateResolver>();
             var contentAreaItemAttributeAssembler = new Mock<IContentAreaItemAttributeAssembler>();
             var contentRepository = new Mock<IContentRepository>();
@@ -68,7 +64,6 @@ namespace Tests
             var contextModeResolver = new Mock<IContextModeResolver>();
             var contentAreaRenderingOptions = new Mock<ContentAreaRenderingOptions>();
             var modelMetadataProvider = new Mock<IModelMetadataProvider>();
-            var modelExplorerFactory = new Mock<ModelExplorerFactory>(modelMetadataProvider.Object);
             var modelTemplateTagResolver = new Mock<IModelTemplateTagResolver>();
 
             var htmlHelper = new Mock<IHtmlHelper>();
@@ -95,7 +90,7 @@ namespace Tests
             foreach (var content in contentItems ?? new List<IContent> { new BasicContent { ContentLink = new ContentReference(100) } })
             {
                 var contentAreaItem = new Mock<ContentAreaItem>();
-                contentAreaLoader.Setup(x => x.Get(contentAreaItem.Object))
+                contentAreaLoader.Setup(x => x.LoadContent(contentAreaItem.Object))
                     .Returns(content);
                 contentAreaItems.Add(contentAreaItem);
             }
@@ -112,27 +107,27 @@ namespace Tests
             modelTemplateTagResolver.Setup(x => x.Resolve(It.IsAny<ModelExplorer>(), It.IsAny<ViewContext>()))
                 .Returns(new List<string>());
             
-            contentRenderer.Setup(x => x.RenderAsync(It.IsAny<IHtmlHelper>(), It.IsAny<IContentData>(), It.IsAny<TemplateModel>()))
-                .Returns<IHtmlHelper, IContentData, TemplateModel>((helper, contentData, templateModel) =>
+            void ContentRenderer(IHtmlHelper helper, IContentData contentData, TemplateModel templateModel)
+            {
+                if (contentData is not TestLayoutBlock)
                 {
-                    if (contentData is not TestLayoutBlock)
-                    {
-                        new TagBuilder($"i").RenderTagTo(helper);
-                    }
-
-                    return Task.CompletedTask;
-                });
+                    new TagBuilder("i").RenderTagTo(helper);
+                }
+            }
 
             var renderer = new ContentAreaLayoutRenderer<T>(
-                contentRenderer.Object,
+                null,
                 templateResolver.Object,
                 contentAreaItemAttributeAssembler.Object,
                 contentRepository.Object,
                 contentAreaLoader.Object,
                 contextModeResolver.Object,
                 contentAreaRenderingOptions.Object,
-                modelExplorerFactory.Object,
-                modelTemplateTagResolver.Object);
+                modelMetadataProvider.Object,
+                modelTemplateTagResolver.Object)
+            {
+                RenderContent = ContentRenderer
+            };
 
             return (renderer, contentAreaItems.Select(c => c.Object).ToList(), htmlHelper.Object, writer);
         }
