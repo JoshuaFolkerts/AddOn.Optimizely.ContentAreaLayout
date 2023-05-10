@@ -33,7 +33,7 @@ namespace AddOn.Optimizely.ContentAreaLayout.Extension
             return blockMetadata;
         }
         
-        public static Dictionary<string, string> GetBlockMetadataProperties(this IContent instance)
+        public static Dictionary<string, string> GetBlockMetadataProperties(this IContentData instance)
         {
             var properties = new Dictionary<string, string>();
             if (instance is null || !(instance is ContentData content))
@@ -63,19 +63,20 @@ namespace AddOn.Optimizely.ContentAreaLayout.Extension
             return properties;
         }
 
-        public static Dictionary<string, string> GetPropertyAttributes<T>(this ContentData instance) where T : System.Attribute
+        public static Dictionary<string, string> GetPropertyAttributes<T>(this IContentData instance) where T : System.Attribute
         {
             var attributes = new Dictionary<string, string>();
-            if (instance is null)
+            if (instance is null || !(instance is ContentData content))
             {
                 return attributes;
             }
 
-            var renderAttributeProperties = instance.GetType().GetProperties().Where((prop) => System.Attribute.IsDefined(prop, typeof(T)));
+
+            var renderAttributeProperties = content.GetType().GetProperties().Where((prop) => System.Attribute.IsDefined(prop, typeof(T)));
 
             foreach (var attributeProp in renderAttributeProperties)
             {
-                var propertyValue = instance.GetPropertyValue(attributeProp.Name, string.Empty);
+                var propertyValue = content.GetPropertyValue(attributeProp.Name, string.Empty);
 
                 if (attributeProp.PropertyType == typeof(bool))
                 {
@@ -87,7 +88,7 @@ namespace AddOn.Optimizely.ContentAreaLayout.Extension
             return attributes;
         }
 
-        public static Dictionary<string, string> GetRenderAttributes(this ContentData instance)
+        public static Dictionary<string, string> GetRenderAttributes(this IContentData instance)
         {
             var attributes = new Dictionary<string, string>();
             if (instance is null)
