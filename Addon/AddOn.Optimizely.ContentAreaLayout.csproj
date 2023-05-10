@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
 	<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
 	<GenerateAssemblyInfo>true</GenerateAssemblyInfo>
@@ -17,8 +17,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-	<PackageReference Include="EPiServer.CMS.AspNetCore.HtmlHelpers" Version="12.13.0" />
-	<PackageReference Include="EPiServer.CMS.UI.Core" Version="12.15.0" />
+	<PackageReference Include="EPiServer.CMS.AspNetCore.HtmlHelpers" Version="[12.13, 13)" />
+	<PackageReference Include="EPiServer.CMS.UI.Core" Version="[12.15,13)" />
 	<FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 </Project>

@@ -10,7 +10,6 @@ using EPiServer;
 using System.Linq;
 using AddOn.Optimizely.ContentAreaLayout.Attributes;
 using System.Reflection;
-using EPiServer.SpecializedProperties;
 
 namespace AddOn.Optimizely.ContentAreaLayout.Extension
 {
@@ -34,11 +33,6 @@ namespace AddOn.Optimizely.ContentAreaLayout.Extension
             return blockMetadata;
         }
         
-        public static Dictionary<string, string> GetBlockMetadataProperties(this IContent instance)
-        {
-            return GetBlockMetadataProperties(instance as IContentData);
-        }
-        
         public static Dictionary<string, string> GetBlockMetadataProperties(this IContentData instance)
         {
             var properties = new Dictionary<string, string>();
@@ -46,7 +40,6 @@ namespace AddOn.Optimizely.ContentAreaLayout.Extension
             {
                 return properties;
             }
-
             var sourceProperties = content.GetPropertyAttributes<BlockRenderingMetadataAttributeAttribute>();
             if (!sourceProperties?.Any() ?? false)
             {
@@ -73,16 +66,17 @@ namespace AddOn.Optimizely.ContentAreaLayout.Extension
         public static Dictionary<string, string> GetPropertyAttributes<T>(this IContentData instance) where T : System.Attribute
         {
             var attributes = new Dictionary<string, string>();
-            if (instance is null || !(instance is ContentData))
+            if (instance is null || !(instance is ContentData content))
             {
                 return attributes;
             }
 
-            var renderAttributeProperties = instance.GetType().GetProperties().Where((prop) => System.Attribute.IsDefined(prop, typeof(T)));
+
+            var renderAttributeProperties = content.GetType().GetProperties().Where((prop) => System.Attribute.IsDefined(prop, typeof(T)));
 
             foreach (var attributeProp in renderAttributeProperties)
             {
-                var propertyValue = (instance as ContentData).GetPropertyValue(attributeProp.Name, string.Empty);
+                var propertyValue = content.GetPropertyValue(attributeProp.Name, string.Empty);
 
                 if (attributeProp.PropertyType == typeof(bool))
                 {
