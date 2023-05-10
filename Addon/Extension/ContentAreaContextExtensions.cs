@@ -10,6 +10,7 @@ using EPiServer;
 using System.Linq;
 using AddOn.Optimizely.ContentAreaLayout.Attributes;
 using System.Reflection;
+using EPiServer.SpecializedProperties;
 
 namespace AddOn.Optimizely.ContentAreaLayout.Extension
 {
@@ -69,10 +70,10 @@ namespace AddOn.Optimizely.ContentAreaLayout.Extension
             return properties;
         }
 
-        public static Dictionary<string, string> GetPropertyAttributes<T>(this ContentData instance) where T : System.Attribute
+        public static Dictionary<string, string> GetPropertyAttributes<T>(this IContentData instance) where T : System.Attribute
         {
             var attributes = new Dictionary<string, string>();
-            if (instance is null)
+            if (instance is null || !(instance is ContentData))
             {
                 return attributes;
             }
@@ -81,7 +82,7 @@ namespace AddOn.Optimizely.ContentAreaLayout.Extension
 
             foreach (var attributeProp in renderAttributeProperties)
             {
-                var propertyValue = instance.GetPropertyValue(attributeProp.Name, string.Empty);
+                var propertyValue = (instance as ContentData).GetPropertyValue(attributeProp.Name, string.Empty);
 
                 if (attributeProp.PropertyType == typeof(bool))
                 {
@@ -93,7 +94,7 @@ namespace AddOn.Optimizely.ContentAreaLayout.Extension
             return attributes;
         }
 
-        public static Dictionary<string, string> GetRenderAttributes(this ContentData instance)
+        public static Dictionary<string, string> GetRenderAttributes(this IContentData instance)
         {
             var attributes = new Dictionary<string, string>();
             if (instance is null)
