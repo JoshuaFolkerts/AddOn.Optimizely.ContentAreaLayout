@@ -28,6 +28,9 @@ namespace AddOn.Optimizely.ContentAreaLayout.Context
 
         public virtual void ContainerOpen(IHtmlHelper htmlHelper, BlockRenderingMetadata blockMetadata)
         {
+            htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Block] = blockMetadata;
+            htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Layout] = blockMetadata.ParentMetadata;
+
             var rowTag = new TagBuilder("div");
 
             foreach (var rowClass in GetRowClasses())
@@ -40,7 +43,10 @@ namespace AddOn.Optimizely.ContentAreaLayout.Context
 
         public virtual void ItemOpen(IHtmlHelper htmlHelper, BlockRenderingMetadata blockMetadata)
         {
+            htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Block] = blockMetadata;
+
             var colTag = new TagBuilder("div");
+
             foreach (var columnClass in GetColumnClasses())
             {
                 colTag.AddCssClass(columnClass);
