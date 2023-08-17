@@ -270,7 +270,7 @@ namespace AddOn.Optimizely.ContentAreaLayout
                 }
                 
                 // Render the content
-                RenderContent(htmlHelper, content as IContent, templateModel);
+                RenderContent(htmlHelper, content, templateModel);
    
                 tagBuilder?.RenderCloseTo(htmlHelper);
             }
