@@ -11,7 +11,7 @@
 	<RepositoryUrl>https://github.com/JoshuaFolkerts/AddOn.Optimizely.ContentAreaLayout</RepositoryUrl>
 	<Copyright />
 	<Authors>Joshua Folkerts, Erik Kärrsgård, Blend Interactive, Wezz Balk</Authors>
-	<Version>4.0.0</Version>
+	<Version>4.0.1</Version>
 	<Description>AddOn.Optimizely.ContentAreaLayout is an extension to Episerver/Optimizely that makes it possible to add layout blocks that will control how the next x blocks will display.</Description>
 	<Product>AddOn.Optimizely.ContentAreaLayout</Product>
   </PropertyGroup>
