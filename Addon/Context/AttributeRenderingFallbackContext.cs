@@ -18,6 +18,10 @@ namespace AddOn.Optimizely.ContentAreaLayout.Context
             contentAreaContainer = new TagBuilder("div");
             contentAreaContainer.Attributes.Add("data-contentarea", String.Empty);
             contentAreaContainer.Attributes.Add("data-contentarea-children", blockMetadata.ParentMetadata.Children.ToString());
+            if (htmlHelper.ViewContext.ViewData.ContainsKey("ContainerCssClass"))
+            {
+                contentAreaContainer.Attributes.Add("class", htmlHelper.ViewContext.ViewData["ContainerCssClass"].ToString());
+            }
             
             // If a viewbag value that contains any property that is not excluded we add it as a data attribute
             var contentAreaViewDataAttributes = htmlHelper.ViewContext.ViewData

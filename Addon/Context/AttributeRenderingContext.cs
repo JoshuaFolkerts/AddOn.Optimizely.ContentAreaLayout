@@ -34,6 +34,10 @@ namespace AddOn.Optimizely.ContentAreaLayout.Context
             rowTag.MergeAttribute("data-layout", blockMetadata.ParentMetadata.ContentLink.ID.ToString());
             rowTag.MergeAttribute("data-layout-index", blockMetadata.ParentMetadata.Index.ToString());
             rowTag.MergeAttribute("data-layout-children", blockMetadata.ParentMetadata.Children.ToString());
+            if (htmlHelper.ViewContext.ViewData.ContainsKey("ContainerCssClass"))
+            {
+                rowTag.Attributes.Add("class", htmlHelper.ViewContext.ViewData["ContainerCssClass"].ToString());
+            }
             foreach (var property in blockMetadata.ParentMetadata.Properties)
             {
                 rowTag.MergeAttribute(property.Key, property.Value);
