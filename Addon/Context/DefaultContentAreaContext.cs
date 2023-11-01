@@ -30,6 +30,7 @@ namespace AddOn.Optimizely.ContentAreaLayout.Context
         
         public virtual void ItemOpen(IHtmlHelper htmlHelper, BlockRenderingMetadata blockMetadata)
         {
+            htmlHelper.ViewContext.ViewData[RenderingMetadataKeys.Block] = blockMetadata;
         }
 
         public virtual void ItemClose(IHtmlHelper htmlHelper)
