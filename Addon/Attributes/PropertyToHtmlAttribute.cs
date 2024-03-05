@@ -2,7 +2,7 @@
 
 namespace AddOn.Optimizely.ContentAreaLayout.Attributes
 {
-    public class PropertyToHtmlAttributeAttribute : Attribute
+    public class PropertyToHtmlAttributeAttribute : BlockRenderingMetadataAttributeAttribute
     {
         private string attributeName;
 

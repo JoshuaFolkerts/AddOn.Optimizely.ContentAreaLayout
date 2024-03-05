@@ -26,7 +26,7 @@
         <tr><th>Block MetaData Properties (@blockMetadata.Properties.Count())</th><td>
             @foreach(var prop in blockMetadata.Properties)
             {
-                <div><strong>prop.Key</strong>: @prop.Value.ToString()</div>
+                <div><strong>@prop.Key</strong>: @prop.Value.ToString()</div>
             }
         </td></tr>
     </table>

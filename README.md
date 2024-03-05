@@ -53,6 +53,38 @@ And how it should render the grid and items with:
         void ContainerOpen(IHtmlHelper htmlHelper);
 ```
 
+## Meta data for content area items
+Each block gets a meta data object assigned to it's ViewBag. 
+
+A block can pick up the meta data by using the following HTMLHelper in a cshtml view.
+```csharp
+@{
+var metadata = Html.BlockMetadata();
+}
+```
+
+[You can see the meta data model in BlockRenderingMetaData.cs](https://github.com/JoshuaFolkerts/AddOn.Optimizely.ContentAreaLayout/blob/master/Addon/Models/BlockRenderingMetaData.cs)
+
+## Expanding meta data from content models
+The meta data can be expanded by adding the following attribute to properties within content models
+```csharp
+[BlockRenderingMetadataAttribute("aria-label")]
+public virtual string Label { get; set; }
+```
+
+The following value will be added to the BlockRenderingMetaData model's **Properties** dictionary.
+
+It can be used to output the value in markup
+```
+@{
+var metadata = Html.BlockMetadata();
+}
+<div aria-label="@metamodel.Properties.GetValueOrDefault("aria-label", string.Empty)">
+</div>
+```
+
+
+
 ## Test site
 
 login with:
