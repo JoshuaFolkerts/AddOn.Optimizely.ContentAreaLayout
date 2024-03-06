@@ -19,6 +19,7 @@ namespace AddOn.Optimizely.ContentAreaLayout.Models
         public BlockRenderingMetadata ParentMetadata { get; set; }
 
         public int Children { get; set; }
+        public bool IsInlineBlock => ContentLink == ContentReference.EmptyReference;
         public Dictionary<string, string> Properties { get; set; } = new Dictionary<string, string>();
     }
 }

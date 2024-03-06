@@ -120,7 +120,8 @@ namespace AddOn.Optimizely.ContentAreaLayout
                     ContentLink = current.ContentLink,
                     ContentGuid = current.ContentGuid,
                     Tag = GetContentAreaItemTemplateTag(htmlHelper, current),
-                    Index = blockMetadata?.Index + 1 ?? 0
+                    Index = blockMetadata?.Index + 1 ?? 0,
+                    Properties = content.GetBlockMetadataProperties()
                 };
                 
                 if (content is IRenderingLayoutBlock asLayoutBlock)

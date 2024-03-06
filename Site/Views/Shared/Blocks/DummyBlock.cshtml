@@ -6,14 +6,15 @@
     var uniqueId = string.Format("dummyblock-{0}-{1}-{2}", blockMetadata.ContentLink.ID, blockMetadata.Index, blockMetadata.ParentMetadata.Index);
 }
 <div id="@uniqueId" @Html.Raw(blockMetadata.BlockMetadataDictionary().ToAttributes())>
-    <strong>Dummy block</strong><br/>
+    <h2>@((!string.IsNullOrEmpty(Model.Text) ? Model.Text : "Dummy block"))</h2>
     
     @if(blockMetadata != BlockRenderingMetadata.Empty) {
     <label for="@(uniqueId + "-checkbox")" role="button">Toggle metadata</label>
-    <input type="checkbox" id="@(uniqueId + "-checkbox")" hidden/>
+    <input type="checkbox" id="@(uniqueId + "-checkbox")" hidden checked/>
         
     <table class="table-debug" style="" cellpadding="3">
         <tr><th>Block Type:</th><td>@blockMetadata.GetContentTypeName()</td></tr>
+        <tr><th>Inline Block:</th><td>@blockMetadata.IsInlineBlock.ToString()</td></tr>
         <tr><th>Block Index:</th><td>@blockMetadata.Index</td></tr>
         <tr><th>Block Content ID</th><td>@blockMetadata.ContentLink.ID</td></tr>
         <tr><th>Block Content Guid</th><td>@blockMetadata.ContentGuid</td></tr>
@@ -21,10 +22,16 @@
         <tr><th>Layout Index</th><td>@blockMetadata.ParentMetadata.Index</td></tr>
         <tr><th>Layout Content ID</th><td>@blockMetadata.ParentMetadata.ContentLink.ID</td></tr>
         <tr><th>Layout Content Guid</th><td>@blockMetadata.ParentMetadata.ContentGuid</td></tr>
+        <tr><th>Layout Content Children</th><td>@blockMetadata.ParentMetadata.Children</td></tr>
+        <tr><th>Block MetaData Properties (@blockMetadata.Properties.Count())</th><td>
+            @foreach(var prop in blockMetadata.Properties)
+            {
+                <div><strong>@prop.Key</strong>: @prop.Value.ToString()</div>
+            }
+        </td></tr>
     </table>
     }
-</div>
-<style>
+    <style>
 #@uniqueId {
     background-color: #0dcaf0; 
     padding: 1rem; 
@@ -49,3 +56,4 @@
     display:none;
 }
 </style>
+</div>
