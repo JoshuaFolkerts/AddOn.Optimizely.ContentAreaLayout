@@ -51,14 +51,12 @@ namespace AddOn.Optimizely.ContentAreaLayout.Extension
                 var contentType = content.GetType();
                 var prop = contentType.GetProperty(property.Key);
                 var propertyAttribute = prop?.GetCustomAttribute<BlockRenderingMetadataAttributeAttribute>();
-                if (!string.IsNullOrEmpty(propertyAttribute?.Name))
+                var attributeName = property.Key ?? propertyAttribute?.Name;
+                if (propertyAttribute is PropertyToHtmlAttributeAttribute propToHtmlAttribute)
                 {
-                    properties.Add(propertyAttribute.Name, property.Value);
+                    attributeName = propToHtmlAttribute.AttributeName;
                 }
-                else
-                {
-                    properties.Add(property.Key, property.Value);
-                }
+                properties.Add(attributeName, property.Value);
             }
             return properties;
         }
