@@ -55,8 +55,17 @@ namespace AddOn.Optimizely.ContentAreaLayout.Extension
                 if (propertyAttribute is PropertyToHtmlAttributeAttribute propToHtmlAttribute)
                 {
                     attributeName = propToHtmlAttribute.AttributeName;
+                    if (propToHtmlAttribute.RenderIfEmpty || !string.IsNullOrEmpty(property.Value))
+                    {
+                        properties.Add(attributeName, property.Value);
+                    }
                 }
-                properties.Add(attributeName, property.Value);
+                else
+                {
+                    properties.Add(attributeName, property.Value);
+                }
+                
+
             }
             return properties;
         }
@@ -99,19 +108,14 @@ namespace AddOn.Optimizely.ContentAreaLayout.Extension
                 var contentType = instance.GetType();
                 var prop = contentType.GetProperty(attribute.Key);
                 var renderAttribute = prop?.GetCustomAttribute<PropertyToHtmlAttributeAttribute>();
-
-                if (string.IsNullOrEmpty(attribute.Value) && renderAttribute?.RenderIfEmpty != false)
+                var attributeName = attribute.Key ?? renderAttribute?.Name;
+                if (!string.IsNullOrEmpty(renderAttribute.AttributeName))
                 {
-                    continue;
+                    attributeName = renderAttribute.AttributeName;
                 }
-                // This overrides the original dictionary item with it's custom name
-                if (!string.IsNullOrEmpty(renderAttribute?.AttributeName))
+                if (renderAttribute.RenderIfEmpty || !string.IsNullOrEmpty(attribute.Value))
                 {
-                    attributes.Add(renderAttribute.AttributeName, attribute.Value);
-                }
-                else
-                {
-                    attributes.Add(attribute.Key, attribute.Value);
+                    attributes.Add(attributeName, attribute.Value);
                 }
             }
 
